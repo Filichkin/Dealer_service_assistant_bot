@@ -28,7 +28,7 @@ class User(Base):
         nullable=False
         )
 
-    purchases: Mapped[List['Payment']] = relationship(
+    payments: Mapped[List['Payment']] = relationship(
         'Payment',
         back_populates='user',
         cascade='all, delete-orphan'
