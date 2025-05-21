@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Annotated
 
 from sqlalchemy import func, TIMESTAMP, Integer
 from sqlalchemy.ext.asyncio import (
@@ -23,6 +24,8 @@ DATABASE_URL = get_db_url()
 engine = create_async_engine(DATABASE_URL)
 
 async_session_maker = async_sessionmaker(engine, class_=AsyncSession)
+
+str_uniq = Annotated[str, mapped_column(unique=True, nullable=False)]
 
 
 class Base(AsyncAttrs, DeclarativeBase):

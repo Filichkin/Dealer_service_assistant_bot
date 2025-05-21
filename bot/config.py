@@ -10,7 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    BOT_TOKEN: str
+    TELEGRAM_TOKEN: str
     ADMIN_IDS: List[int]
     PROVIDER_TOKEN: str
     FORMAT_LOG: str = '{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}'
@@ -41,7 +41,7 @@ def get_db_url():
 
 
 bot = Bot(
-    token=settings.BOT_TOKEN,
+    token=settings.TELEGRAM_TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
 dp = Dispatcher(storage=MemoryStorage())
