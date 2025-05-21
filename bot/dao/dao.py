@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from bot.dao.base import BaseDAO
-from bot.dao.models import Payment, User
+from bot.dao.models import Payment, Service, User
 
 
 class UserDAO(BaseDAO[User]):
@@ -121,3 +121,7 @@ class PaymentDao(BaseDAO[Payment]):
         result = await session.execute(query)
         total_price = result.scalars().one_or_none()
         return total_price if total_price is not None else 0
+
+
+class ServiceDao(BaseDAO[Service]):
+    model = Service

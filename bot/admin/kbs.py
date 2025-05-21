@@ -6,8 +6,8 @@ def admin_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='📊 Статистика', callback_data='statistic')
     kb.button(
-        text='👨‍💼 Управлять пользователями',
-        callback_data='process_users'
+        text='👨‍💼 Управлять сервисами',
+        callback_data='process_services'
         )
     kb.button(text='🏠 На главную', callback_data='home')
     kb.adjust(2)
@@ -22,19 +22,19 @@ def admin_kb_back() -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
-def dell_user_kb(user_id: int) -> InlineKeyboardMarkup:
+def dell_service_kb(service_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text='🗑️ Удалить', callback_data=f'dell_{user_id}')
+    kb.button(text='🗑️ Удалить', callback_data=f'dell_{service_id}')
     kb.button(text='⚙️ Админ панель', callback_data='admin_panel')
     kb.button(text='🏠 На главную', callback_data='home')
     kb.adjust(2, 2, 1)
     return kb.as_markup()
 
 
-def user_management_kb() -> InlineKeyboardMarkup:
+def service_management_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text='➕ Добавить пользователя', callback_data='add_user')
-    kb.button(text='🗑️ Удалить пользователя', callback_data='delete_user')
+    kb.button(text='➕ Добавить сервис', callback_data='add_service')
+    kb.button(text='🗑️ Удалить сервис', callback_data='delete_service')
     kb.button(text='⚙️ Админ панель', callback_data='admin_panel')
     kb.button(text='🏠 На главную', callback_data='home')
     kb.adjust(2, 2, 1)
