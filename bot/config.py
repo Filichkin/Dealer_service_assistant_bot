@@ -22,8 +22,10 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     model_config = SettingsConfigDict(
         env_file=os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), '..', '.env'
-            )
+            os.path.dirname(os.path.abspath(__file__)),
+            '..',
+            '.env'
+        )
     )
 
 
@@ -46,7 +48,8 @@ dp = Dispatcher(storage=MemoryStorage())
 admins = settings.ADMIN_IDS
 
 log_file_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'log.txt'
+    os.path.dirname(os.path.abspath(__file__)),
+    'log.txt'
     )
 logger.add(
     log_file_path,
@@ -54,4 +57,3 @@ logger.add(
     level='INFO',
     rotation=settings.LOG_ROTATION
     )
-database_url = get_db_url()
