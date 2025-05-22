@@ -50,7 +50,7 @@ def service_kb(service_id, price) -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
-def get_product_buy_kb(price) -> InlineKeyboardMarkup:
+def get_service_buy_kb(price) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=f'Оплатить {price}₽', pay=True)],
         [InlineKeyboardButton(text='Отменить', callback_data='home')]
