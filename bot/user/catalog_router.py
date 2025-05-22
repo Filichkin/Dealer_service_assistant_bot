@@ -60,3 +60,105 @@ async def page_service(
         )
     else:
         await call.answer('О данном сервисе нет информации.')
+
+
+@catalog_router.callback_query(F.data.startswith('buy_'))
+async def process_about(
+    call: CallbackQuery,
+    session_without_commit: AsyncSession
+):
+    user_info = await UserDAO.find_one_or_none(
+        session=session_without_commit,
+        filters=TelegramIDModel(telegram_id=call.from_user.id)
+    )
+    _, service_id, price = call.data.split('_')
+    await bot.send_invoice(
+        chat_id=call.from_user.id,
+        title=f'Оплата 👉 {price}₽',
+        description=(
+            f'Пожалуйста, завершите оплату в размере {price}₽, '
+            f'чтобы открыть доступ к выбранному сервису.'
+            ),
+        payload=f'{user_info.id}_{service_id}',
+        provider_token=settings.PROVIDER_TOKEN,
+        currency='rub',
+        prices=[
+            LabeledPrice(
+                label=f'Оплата {price}',
+                amount=int(price) * 100
+                )
+            ],
+        reply_markup=get_service_buy_kb(price)
+    )
+    await call.message.delete()
+
+
+@catalog_router.pre_checkout_query(lambda query: True)
+async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout_q.id, ok=True)
+
+
+@catalog_router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
+async def successful_payment(
+    message: Message,
+    session_with_commit: AsyncSession
+):
+    payment_info = message.successful_payment
+    user_id, service_id = payment_info.invoice_payload.split('_')
+    payment_data = {
+        'user_id': int(user_id),
+        'payment_id': payment_info.telegram_payment_charge_id,
+        'price': payment_info.total_amount / 100,
+        'product_id': int(service_id)
+    }
+    # Добавляем информацию о покупке в базу данных
+    await PaymentDao.add(
+        session=session_with_commit,
+        values=PaymentData(**payment_data)
+        )
+    service_data = await ServiceDao.find_one_or_none_by_id(
+        session=session_with_commit,
+        data_id=int(service_id)
+        )
+
+    # Формируем уведомление администраторам
+    for admin_id in settings.ADMIN_IDS:
+        try:
+            username = message.from_user.username
+            user_info = (
+                f'@{username} ({message.from_user.id})'
+                if username else f'c ID {message.from_user.id}'
+                )
+
+            await bot.send_message(
+                chat_id=admin_id,
+                text=(
+                    f'💲 Пользователь {user_info} оплатил сервис '
+                    f'<b>{service_data.name}</b> (ID: {service_id}) '
+                    f'в размере <b>{service_data.price} ₽</b>.'
+                )
+            )
+        except Exception as e:
+            logger.error(
+                f'Ошибка при отправке уведомления администраторам: {e}'
+                )
+
+    # Подготавливаем текст для пользователя
+    service_text = (
+        f'🎉 <b>Спасибо за покупку!</b>\n\n'
+        f'🛒 <b>Информация о вашем сервисе:</b>\n'
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f'🔹 <b>Название:</b> <b>{service_data.name}</b>\n'
+        f'🔹 <b>Описание:</b>\n<i>{service_data.description}</i>\n'
+        f'🔹 <b>Цена:</b> <b>{service_data.price} ₽</b>\n'
+        f'🔹 <b>Закрытое описание:</b>\n<i>{service_data.hidden_content}</i>\n'
+        f'━━━━━━━━━━━━━━━━━━\n'
+        f'ℹ️ <b>Информацию о всех ваших покупках '
+        f'вы можете найти в личном профиле.</b>'
+    )
+
+    # Отправляем информацию о товаре пользователю
+    await message.answer(
+        text=service_text,
+        reply_markup=main_user_kb(message.from_user.id)
+    )
