@@ -49,7 +49,7 @@ async def page_service(
     )
     if service:
         service_text = (
-            f'📦 <b>Название товара:</b> {service.name}\n\n'
+            f'📦 <b>Название сервиса:</b> {service.name}\n\n'
             f'💰 <b>Цена:</b> {service.price} руб.\n\n'
             f'📝 <b>Описание:</b>\n<i>{service.description}</i>\n\n'
             f'━━━━━━━━━━━━━━━━━━'
@@ -62,7 +62,7 @@ async def page_service(
         await call.answer('О данном сервисе нет информации.')
 
 
-@catalog_router.callback_query(F.data.startswith('buy_'))
+@catalog_router.callback_query(F.data.startswith('pay_'))
 async def process_about(
     call: CallbackQuery,
     session_without_commit: AsyncSession
@@ -109,7 +109,7 @@ async def successful_payment(
         'user_id': int(user_id),
         'payment_id': payment_info.telegram_payment_charge_id,
         'price': payment_info.total_amount / 100,
-        'product_id': int(service_id)
+        'service_id': int(service_id)
     }
     # Добавляем информацию о покупке в базу данных
     await PaymentDao.add(

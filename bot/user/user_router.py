@@ -121,7 +121,7 @@ async def page_user_payments(
 
     # Для каждой оплаты отправляем информацию.
     for payment in payments:
-        service = payment.product
+        service = payment.service
 
         service_text = (
             f'🛒 <b>Информация о вашем сервисе:</b>\n'

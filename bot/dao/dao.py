@@ -62,7 +62,7 @@ class UserDAO(BaseDAO[User]):
             if user is None:
                 return None
 
-            return user.purchases
+            return user.payments
 
         except SQLAlchemyError as e:
             # Обработка ошибок при работе с базой данных

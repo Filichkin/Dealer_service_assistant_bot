@@ -153,7 +153,7 @@ async def admin_process_services(
 
 
 @admin_router.callback_query(
-        F.data == 'add_product',
+        F.data == 'add_service',
         F.from_user.id.in_(settings.ADMIN_IDS)
         )
 async def admin_process_add_service(call: CallbackQuery, state: FSMContext):
