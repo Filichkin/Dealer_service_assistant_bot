@@ -43,6 +43,35 @@ class UserDAO(BaseDAO[User]):
             return None
 
     @classmethod
+    async def get_purchased_services(
+        cls,
+        session: AsyncSession,
+        telegram_id: int
+    ) -> Optional[List[Payment]]:
+        try:
+            # Запрос для получения пользователя с его оплатами.
+            result = await session.execute(
+                select(User)
+                .options(
+                    selectinload(User.payments).selectinload(Payment.product)
+                )
+                .filter(User.telegram_id == telegram_id)
+            )
+            user = result.scalar_one_or_none()
+
+            if user is None:
+                return None
+
+            return user.purchases
+
+        except SQLAlchemyError as e:
+            # Обработка ошибок при работе с базой данных
+            print(
+                f'Ошибка при получении информации об оплатах пользователя: {e}'
+                )
+            return None
+
+    @classmethod
     async def get_payments(
         cls, session: AsyncSession, telegram_id: int
     ) -> Optional[List[Payment]]:
