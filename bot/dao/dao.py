@@ -53,7 +53,7 @@ class UserDAO(BaseDAO[User]):
             result = await session.execute(
                 select(User)
                 .options(
-                    selectinload(User.payments).selectinload(Payment.product)
+                    selectinload(User.payments).selectinload(Payment.service)
                 )
                 .filter(User.telegram_id == telegram_id)
             )

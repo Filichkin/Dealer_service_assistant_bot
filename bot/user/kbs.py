@@ -15,7 +15,7 @@ from bot.dao.models import Service
 def main_user_kb(user_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='👤 Мои сервисы', callback_data='my_profile')
-    kb.button(text='🛍 Каталог", callback_data="catalog')
+    kb.button(text='🛍 Каталог', callback_data='catalog')
     kb.button(text='ℹ️ О сервисе', callback_data='about')
     kb.button(text='🌟 Поддержка 🌟', url='https://telegram.me/alexeyfill')
     if user_id in settings.ADMIN_IDS:

@@ -1,30 +1,17 @@
 from typing import List
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import BigInteger, Text, text, ForeignKey
-from bot.dao.database import Base, str_uniq
+from sqlalchemy import BigInteger, Text, ForeignKey
+from bot.dao.database import Base
 
 
 class User(Base):
-    phone_number: Mapped[str_uniq]
+    username: Mapped[str | None]
     first_name: Mapped[str]
     last_name: Mapped[str]
-    dealer_code: Mapped[str]
-    email: Mapped[str_uniq]
     telegram_id: Mapped[int] = mapped_column(
         BigInteger,
         unique=True,
-        nullable=False
-        )
-
-    approved: Mapped[bool] = mapped_column(
-        default=False,
-        server_default=text('true'),
-        nullable=False
-        )
-    is_admin: Mapped[bool] = mapped_column(
-        default=False,
-        server_default=text('false'),
         nullable=False
         )
 
@@ -66,7 +53,7 @@ class Payment(Base):
         'User',
         back_populates='payments'
         )
-    product: Mapped['Service'] = relationship(
+    service: Mapped['Service'] = relationship(
         'Service',
         back_populates='payments'
         )
