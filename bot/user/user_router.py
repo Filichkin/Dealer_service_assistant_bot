@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import UserDAO
-from bot.user.kbs import main_user_kb, payments_kb
+from bot.user.kbs import main_user_kb, payments_kb, catalog_kb
 from bot.user.schemas import TelegramIDModel, UserModel
 
 
@@ -86,6 +86,16 @@ async def page_about(
             reply_markup=main_user_kb(call.from_user.id)
         )
     else:
+        # Формируем список оплаченных сервисов.
+        payments = await UserDAO.get_purchased_services(
+            session=session_without_commit,
+            telegram_id=call.from_user.id
+            )
+        services = [payment.service for payment in payments]
+        await call.message.edit_text(
+            text='Выберите сервис:',
+            reply_markup=catalog_kb(services)
+        )
         text = (
             f'🚗  <b>Ваш профиль:</b>\n\n'
             f'Количество покупок: <b>{total_payments}</b>\n'
