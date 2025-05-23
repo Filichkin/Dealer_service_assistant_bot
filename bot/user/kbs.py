@@ -2,7 +2,9 @@ from typing import List
 
 from aiogram.types import (
     InlineKeyboardMarkup,
-    InlineKeyboardButton
+    InlineKeyboardButton,
+    KeyboardButton,
+    ReplyKeyboardMarkup
 )
 from aiogram.utils.keyboard import (
     InlineKeyboardBuilder,
@@ -20,8 +22,39 @@ def main_user_kb(user_id: int) -> InlineKeyboardMarkup:
     kb.button(text='🌟 Поддержка 🌟', url='https://telegram.me/alexeyfill')
     if user_id in settings.ADMIN_IDS:
         kb.button(text='⚙️ Админ панель', callback_data='admin_panel')
-    kb.adjust(1)
+    kb.adjust(2)
     return kb.as_markup()
+
+
+'''
+def main_user_kb(user_id: int) -> ReplyKeyboardMarkup:
+    kb_list = [
+        [
+            KeyboardButton(text='👤 Мои сервисы', callback_data='my_profile'),
+            KeyboardButton(text='🛍 Каталог', callback_data='catalog')
+        ],
+        [
+            KeyboardButton(text='ℹ️ О сервисе', callback_data='about'),
+            KeyboardButton(text='🌟 Поддержка 🌟', url='https://telegram.me/alexeyfill')
+        ],
+    ]
+    if user_id in settings.ADMIN_IDS:
+        kb_list.append(
+            [
+                KeyboardButton(
+                    text='⚙️ Админ панель',
+                    callback_data='admin_panel'
+                    )
+            ]
+        )
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb_list,
+        resize_keyboard=True,
+        one_time_keyboard=True,
+        input_field_placeholder='Воспользуйтесь меню:'
+    )
+    return keyboard
+'''
 
 
 def catalog_kb(service_data: List[Service]) -> InlineKeyboardMarkup:
