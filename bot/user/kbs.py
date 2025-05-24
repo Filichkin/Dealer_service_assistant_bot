@@ -68,3 +68,10 @@ def get_service_buy_kb(price) -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text=f'Оплатить {price}₽', pay=True)],
         [InlineKeyboardButton(text='Отменить', callback_data='home')]
     ])
+
+
+def home_kb() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text='🏠 На главную', callback_data='home')
+    kb.adjust(1)
+    return kb.as_markup()

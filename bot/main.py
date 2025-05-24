@@ -8,8 +8,9 @@ from bot.dao.database_middleware import (
     DatabaseMiddlewareWithCommit
 )
 from bot.admin.admin import admin_router
-from bot.user.user_router import user_router
 from bot.user.catalog_router import catalog_router
+from bot.user.service_router import service_router
+from bot.user.user_router import user_router
 
 
 # Функция, которая настроит командное меню (дефолтное для всех пользователей)
@@ -48,6 +49,7 @@ async def main():
     dp.include_router(catalog_router)
     dp.include_router(user_router)
     dp.include_router(admin_router)
+    dp.include_router(service_router)
 
     # Регистрация функций
     dp.startup.register(start_bot)
