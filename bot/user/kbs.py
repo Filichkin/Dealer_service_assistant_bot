@@ -75,3 +75,17 @@ def home_kb() -> InlineKeyboardMarkup:
     kb.button(text='🏠 На главную', callback_data='home')
     kb.adjust(1)
     return kb.as_markup()
+
+
+def cancel_kb_inline() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text='Отмена', callback_data='cancel_service')
+    return kb.as_markup()
+
+
+def user_kb_back() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text='🏠 На главную', callback_data='home')
+    kb.button(text='🚗 Мои сервисы', callback_data='my_profile')
+    kb.adjust(1)
+    return kb.as_markup()
