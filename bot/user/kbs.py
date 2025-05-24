@@ -34,6 +34,18 @@ def catalog_kb(service_data: List[Service]) -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
+def user_services_kb(service_data: List[Service]) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    for service in service_data:
+        kb.button(
+            text=service.name,
+            callback_data=f'user_service_{service.id}'
+            )
+    kb.button(text='🏠 На главную', callback_data='home')
+    kb.adjust(1)
+    return kb.as_markup()
+
+
 def payments_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='🗑 Смотреть платежи', callback_data='payments')

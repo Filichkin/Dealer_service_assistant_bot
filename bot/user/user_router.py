@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import UserDAO
-from bot.user.kbs import main_user_kb, catalog_kb
+from bot.user.kbs import main_user_kb, user_services_kb
 from bot.user.schemas import TelegramIDModel, UserModel
 
 
@@ -43,7 +43,7 @@ async def cmd_start(message: Message, session_with_commit: AsyncSession):
 async def page_home(call: CallbackQuery):
     await call.answer('Главная страница')
     return await call.message.answer(
-        f'👋 Привет, {call.from_user.full_name}! Выберите необходимое действие',
+        'Выберите необходимое действие:',
         reply_markup=main_user_kb(call.from_user.id)
     )
 
@@ -87,7 +87,7 @@ async def page_user_profile(
         services = [payment.service for payment in payments]
         await call.message.edit_text(
             text='Выберите сервис:',
-            reply_markup=catalog_kb(services)
+            reply_markup=user_services_kb(services)
         )
 
 
