@@ -64,42 +64,33 @@ async def page_about(call: CallbackQuery):
 
 
 @user_router.callback_query(F.data == 'my_profile')
-async def page_about(
+async def page_user_profile(
     call: CallbackQuery,
     session_without_commit: AsyncSession
 ):
     await call.answer('Профиль')
 
-    # Получаем статистику покупок пользователя
-    payments = await UserDAO.get_purchase_statistics(
-        session=session_without_commit,
-        telegram_id=call.from_user.id
-        )
-    total_amount = payments.get('total_amount', 0)
-    total_payments = payments.get('count_payments', 0)
+    # Получаем покупки пользователя
+    payments = await UserDAO.get_purchased_services(
+            session=session_without_commit,
+            telegram_id=call.from_user.id
+            )
 
     # Формируем сообщение в зависимости от наличия покупок
-    if total_payments == 0:
+    if payments == 0:
         await call.message.answer(
-            text='🔍 <b>У вас пока нет оплат.</b>\n\n'
+            text='🔍 <b>У вас пока нет оплаченных сервисов.</b>\n\n'
                  'Откройте каталог и выберите нужный сервис!',
             reply_markup=main_user_kb(call.from_user.id)
         )
     else:
         # Формируем список оплаченных сервисов.
-        payments = await UserDAO.get_purchased_services(
-            session=session_without_commit,
-            telegram_id=call.from_user.id
-            )
         services = [payment.service for payment in payments]
         await call.message.edit_text(
             text='Выберите сервис:',
             reply_markup=catalog_kb(services)
         )
         text = (
-            f'🚗  <b>Ваш профиль:</b>\n\n'
-            f'Количество покупок: <b>{total_payments}</b>\n'
-            f'Общая сумма: <b>{total_amount}₽</b>\n\n'
             'Хотите просмотреть детали ваших оплат?'
         )
         await call.message.answer(
@@ -120,6 +111,12 @@ async def page_user_payments(
         session=session_without_commit,
         telegram_id=call.from_user.id
         )
+    payments_statistic = await UserDAO.get_purchase_statistics(
+        session=session_without_commit,
+        telegram_id=call.from_user.id
+        )
+    total_amount = payments_statistic.get('total_amount', 0)
+    total_payments = payments_statistic.get('count_payments', 0)
 
     if not payments:
         await call.message.edit_text(
@@ -128,6 +125,13 @@ async def page_user_payments(
             reply_markup=main_user_kb(call.from_user.id)
         )
         return
+    statistic_text = (
+            f'🚗  <b>Ваш профиль:</b>\n\n'
+            f'Количество покупок: <b>{total_payments}</b>\n'
+            f'Общая сумма: <b>{total_amount}₽</b>\n\n'
+            'Хотите просмотреть детали ваших оплат?'
+        )
+    await call.message.answer(text=statistic_text)
 
     # Для каждой оплаты отправляем информацию.
     for payment in payments:
