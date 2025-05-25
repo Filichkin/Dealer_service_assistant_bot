@@ -63,3 +63,26 @@ class Payment(Base):
             f'<Payment(id={self.id}, user_id={self.user_id}, '
             f'product_id={self.service_id}, date={self.created_at})>'
             )
+
+
+class VehicleData(Base):
+    local_vin: Mapped[str] = mapped_column(
+        Text,
+        unique=True,
+        nullable=False
+        )
+    dkd_vin: Mapped[str] = mapped_column(
+        Text,
+        unique=True,
+        nullable=False
+        )
+    warranty_start_date: Mapped[str]
+    engine_number: Mapped[str]
+    transmission_number: Mapped[str]
+    key_number: Mapped[str]
+    body_color: Mapped[str]
+
+    extend_existing = True
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(id={self.id})'

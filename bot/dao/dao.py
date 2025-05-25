@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from bot.dao.base import BaseDAO
-from bot.dao.models import Payment, Service, User
+from bot.dao.models import Payment, Service, User, VehicleData
 
 
 class UserDAO(BaseDAO[User]):
@@ -154,3 +154,7 @@ class PaymentDao(BaseDAO[Payment]):
 
 class ServiceDao(BaseDAO[Service]):
     model = Service
+
+
+class VehicleDao(BaseDAO[VehicleData]):
+    model = VehicleData
