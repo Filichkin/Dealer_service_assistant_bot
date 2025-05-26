@@ -36,6 +36,7 @@ async def page_service(
             service_text,
             reply_markup=cancel_kb_inline()
         )
+
     elif 'Наличие запасных частей' in str(service.name):
         await call.answer('Запущена проверка наличия запасных частей.')
         service_text = (
@@ -59,7 +60,8 @@ async def page_service(
 
 
 @service_router.message(
-        F.text
+        F.text.len() == 17,
+        F.from_user.id.in_({312831871})
     )
 async def vin_decoder(message: Message, session_without_commit: AsyncSession):
     vin = message.text.upper()

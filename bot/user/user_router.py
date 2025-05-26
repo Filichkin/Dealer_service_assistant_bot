@@ -74,9 +74,8 @@ async def page_user_profile(
             session=session_without_commit,
             telegram_id=call.from_user.id
             )
-
     # Формируем сообщение в зависимости от наличия покупок
-    if payments == 0:
+    if len(payments) == 0:
         await call.message.answer(
             text='🔍 <b>У вас пока нет оплаченных сервисов.</b>\n\n'
                  'Откройте каталог и выберите нужный сервис!',
