@@ -10,6 +10,8 @@ from bot.user.kbs import cancel_kb_inline, user_kb_back
 from bot.utils.vin_converter import vin_converter
 
 
+prefix = ('Z', 'Z', 'U', 'M')
+
 service_router = Router()
 
 
@@ -41,10 +43,21 @@ async def page_service(
 @service_router.message(
         F.text
     )
-async def vin_decoder(message: Message):
-    vin = message.text
+async def vin_decoder(message: Message, session_without_commit: AsyncSession):
+    vin = message.text.upper()
+    if len(vin) < 17:
+        return await message.answer(
+            text='Данный VIN введен не корректно',
+            reply_markup=cancel_kb_inline()
+            )
+    elif vin.startswith(prefix):
+        return await message.answer(
+            text='Данный VIN не имеет DKD аналога',
+            reply_markup=cancel_kb_inline()
+            )
+    dkd = await vin_converter(vin, session_without_commit)
     await message.answer(
-        text=vin_converter(vin, AsyncSession),
+        text=dkd.dkd_vin,
         reply_markup=cancel_kb_inline()
         )
 

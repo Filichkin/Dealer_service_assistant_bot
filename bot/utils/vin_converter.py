@@ -11,11 +11,10 @@ async def vin_converter(vin: str, session_without_commit: AsyncSession):
         return 'Данный VIN введен не корректно'
     elif vin.startswith(prefix):
         return 'Данный VIN не имеет DKD аналога'
-    try:
-        result = VehicleDao.find_one_or_none(
-            session=session_without_commit,
-            filters=vin
-            )
-        return await result.dkd_vin
-    except KeyError:
-        return 'Данный VIN введен не корректно или отсутствует в базе данных'
+    result = await VehicleDao.find_one_or_none_by_vin(
+        session=session_without_commit,
+        vin=vin
+        )
+    if result is not None:
+        return result
+    return 'Данный VIN введен не корректно или отсутствует в базе данных'

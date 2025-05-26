@@ -61,6 +61,23 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
+    async def find_one_or_none_by_vin(cls, vin: str, session: AsyncSession):
+        # Найти запись по ID.
+        logger.info(f'Поиск {cls.model.__name__} с VIN: {vin}')
+        try:
+            query = select(cls.model).filter_by(local_vin=vin)
+            result = await session.execute(query)
+            record = result.scalar_one_or_none()
+            if record:
+                logger.info(f'Запись с VIN {vin} найдена.')
+            else:
+                logger.info(f'Запись с VIN {vin} не найдена.')
+            return record
+        except SQLAlchemyError as e:
+            logger.error(f'Ошибка при поиске записи с VIN {vin}: {e}')
+            raise
+
+    @classmethod
     async def find_all(
         cls, session: AsyncSession, filters: BaseModel | None = None
     ):
