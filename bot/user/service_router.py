@@ -36,6 +36,24 @@ async def page_service(
             service_text,
             reply_markup=cancel_kb_inline()
         )
+    elif 'Наличие запасных частей' in str(service.name):
+        await call.answer('Запущена проверка наличия запасных частей.')
+        service_text = (
+            'Введите каталожный номер'
+        )
+        await call.message.answer(
+            service_text,
+            reply_markup=cancel_kb_inline()
+        )
+    elif 'История ТО' in str(service.name):
+        await call.answer('Запущена проверка истории ТО.')
+        service_text = (
+            'Введите локальный VIN'
+        )
+        await call.message.answer(
+            service_text,
+            reply_markup=cancel_kb_inline()
+        )
     else:
         await call.answer('О данном сервисе нет информации.')
 
