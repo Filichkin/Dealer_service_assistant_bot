@@ -1,3 +1,4 @@
+import argparse
 import json
 
 import sqlalchemy
@@ -5,6 +6,18 @@ from sqlalchemy import MetaData
 from sqlalchemy import insert
 
 from bot.config import settings
+
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    '--json_root',
+    dest='file_path',
+    required=True,
+    help='path to json file'
+    )
+
+args = parser.parse_args()
 
 
 DATABASE_URL = (f'postgresql://{settings.POSTGRES_USER}:'
@@ -21,8 +34,6 @@ metadata.create_all(engine)
 metadata.reflect(engine)
 
 vehicle_table = sqlalchemy.Table('vehicledatas', metadata)
-
-PATH = 'data/test.json'
 
 
 def json_upload(file_path):
@@ -51,4 +62,4 @@ def json_upload(file_path):
 
 
 if __name__ == '__main__':
-    json_upload(PATH)
+    json_upload(args.file_path)
