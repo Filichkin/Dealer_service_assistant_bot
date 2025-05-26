@@ -76,6 +76,7 @@ class VehicleData(Base):
         unique=True,
         nullable=False
         )
+    dist_code: Mapped[str]
     warranty_start_date: Mapped[str]
     engine_number: Mapped[str]
     transmission_number: Mapped[str]
