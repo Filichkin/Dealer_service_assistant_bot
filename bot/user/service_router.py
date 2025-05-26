@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import ServiceDao
 from bot.user.kbs import cancel_kb_inline, user_kb_back
+from bot.utils.vin_converter import vin_converter
 
 
 service_router = Router()
@@ -43,7 +44,7 @@ async def page_service(
 async def vin_decoder(message: Message):
     vin = message.text
     await message.answer(
-        text=vin,
+        text=vin_converter(vin, AsyncSession),
         reply_markup=cancel_kb_inline()
         )
 
