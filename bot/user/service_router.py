@@ -1,4 +1,7 @@
 from aiogram import Router, F
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
     CallbackQuery,
     Message
@@ -13,6 +16,10 @@ from bot.utils.vin_converter import vin_converter
 prefix = ('Z', 'Z', 'U', 'M')
 
 service_router = Router()
+
+
+class AddMessage(StatesGroup):
+    data = State()
 
 
 @service_router.callback_query(
@@ -30,7 +37,7 @@ async def page_service(
     if 'VIN' in str(service.name):
         await call.answer('Запущен VIN decoder.')
         service_text = (
-            'Введите локальный VIN'
+            'Введите команду convert'
         )
         await call.message.answer(
             service_text,
@@ -60,9 +67,21 @@ async def page_service(
 
 
 @service_router.message(
-        F.text.len() == 17,
-        F.from_user.id.in_({312831871})
+        Command(commands=['convert'])
     )
+async def menu_handler(
+    message: Message,
+    session_without_commit: AsyncSession,
+    state: FSMContext
+):
+    await message.answer(text='Введите локальный VIN')
+    await state.set_state(state=AddMessage.data)
+
+
+@service_router.message(AddMessage.data)
+async def vin_decoder(message: Message, state: FSMContext):
+    await message.answer(f"Вы ввели {message.text}")
+'''    
 async def vin_decoder(message: Message, session_without_commit: AsyncSession):
     vin = message.text.upper()
     if len(vin) < 17:
@@ -80,7 +99,7 @@ async def vin_decoder(message: Message, session_without_commit: AsyncSession):
         text=dkd.dkd_vin,
         reply_markup=cancel_kb_inline()
         )
-
+'''
 
 @service_router.callback_query(F.data == 'cancel_service')
 async def user_process_cancel(call: CallbackQuery):
