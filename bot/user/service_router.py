@@ -71,7 +71,7 @@ async def page_service(
     )
 async def menu_handler(
     message: Message,
-    session_without_commit: AsyncSession,
+
     state: FSMContext
 ):
     await message.answer(text='Введите локальный VIN')
@@ -79,8 +79,15 @@ async def menu_handler(
 
 
 @service_router.message(AddMessage.data)
-async def vin_decoder(message: Message, state: FSMContext):
-    await message.answer(f"Вы ввели {message.text}")
+async def vin_decoder(
+    message: Message,
+    session_without_commit: AsyncSession
+):
+    dkd = await vin_converter(message.text, session_without_commit)
+    await message.answer(
+        text=dkd.dkd_vin,
+        reply_markup=cancel_kb_inline()
+        )
 '''    
 async def vin_decoder(message: Message, session_without_commit: AsyncSession):
     vin = message.text.upper()
@@ -108,4 +115,11 @@ async def user_process_cancel(call: CallbackQuery):
     await call.message.answer(
         text='Отмена операции.',
         reply_markup=user_kb_back()
+    )
+
+
+@service_router.callback_query(F.data == 'convert_service')
+async def convert_process(call: CallbackQuery):
+    await call.message.answer(
+        text='/convert'
     )
