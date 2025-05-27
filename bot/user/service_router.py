@@ -20,7 +20,7 @@ service_router = Router()
     )
 async def page_service(
     call: CallbackQuery,
-    session_without_commit: AsyncSession,
+    session_without_commit: AsyncSession
 ):
     service_id = int(call.data.split('_')[-1])
     service = await ServiceDao.find_one_or_none_by_id(
