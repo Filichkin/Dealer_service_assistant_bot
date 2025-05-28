@@ -7,7 +7,7 @@ from aiogram.types import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.dao.dao import ServiceDao
+from bot.dao.dao import PaymentDao, ServiceDao
 from bot.user.kbs import (
     cancel_kb_inline,
     cancel_convert_kb_inline,
@@ -15,8 +15,6 @@ from bot.user.kbs import (
 )
 from bot.utils.vin_converter import vin_converter
 
-
-prefix = ('Z', 'Z', 'U', 'M')
 
 service_router = Router()
 
@@ -33,6 +31,11 @@ async def page_service(
     session_without_commit: AsyncSession
 ):
     service_id = int(call.data.split('_')[-1])
+    payments = await PaymentDao.get_users_ids(
+        session=session_without_commit,
+        service_id=service_id
+        )
+    print([payment.user.telegram_id for payment in payments])
     service = await ServiceDao.find_one_or_none_by_id(
         session=session_without_commit,
         data_id=service_id

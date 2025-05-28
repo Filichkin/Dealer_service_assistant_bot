@@ -40,7 +40,7 @@ class Service(Base):
 
     def __repr__(self):
         return (
-            f"<Product(id={self.id}, name='{self.name}', price={self.price})>"
+            f"<Service(id={self.id}, name='{self.name}', price={self.price})>"
             )
 
 
@@ -57,12 +57,6 @@ class Payment(Base):
         'Service',
         back_populates='payments'
         )
-
-    def __repr__(self):
-        return (
-            f'<Payment(id={self.id}, user_id={self.user_id}, '
-            f'product_id={self.service_id}, date={self.created_at})>'
-            )
 
 
 class VehicleData(Base):

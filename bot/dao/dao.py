@@ -151,6 +151,20 @@ class PaymentDao(BaseDAO[Payment]):
         total_price = result.scalars().one_or_none()
         return total_price if total_price is not None else 0
 
+    @classmethod
+    async def get_users_telegram_ids(
+        cls,
+        session: AsyncSession,
+        service_id: int
+    ):
+        result = await session.execute(
+            select(Payment).options(
+                selectinload(Payment.user)
+                ).filter(Payment.service_id == service_id)
+        )
+        result = result.scalars().all()
+        return result
+
 
 class ServiceDao(BaseDAO[Service]):
     model = Service
