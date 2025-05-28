@@ -162,8 +162,9 @@ class PaymentDao(BaseDAO[Payment]):
                 selectinload(Payment.user)
                 ).filter(Payment.service_id == service_id)
         )
-        result = result.scalars().all()
-        return result
+        payments = result.scalars().all()
+        telegram_ids = [payment.user.telegram_id for payment in payments]
+        return telegram_ids
 
 
 class ServiceDao(BaseDAO[Service]):

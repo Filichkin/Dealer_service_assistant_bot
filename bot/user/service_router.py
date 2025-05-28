@@ -1,6 +1,5 @@
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
     CallbackQuery,
     Message
@@ -19,10 +18,6 @@ from bot.utils.vin_converter import vin_converter
 service_router = Router()
 
 
-class AddMessage(StatesGroup):
-    data = State()
-
-
 @service_router.callback_query(
         F.data.startswith('user_service_')
     )
@@ -31,11 +26,11 @@ async def page_service(
     session_without_commit: AsyncSession
 ):
     service_id = int(call.data.split('_')[-1])
-    payments = await PaymentDao.get_users_ids(
+    telegram_ids = await PaymentDao.get_users_telegram_ids(
         session=session_without_commit,
         service_id=service_id
         )
-    print([payment.user.telegram_id for payment in payments])
+    print(telegram_ids)
     service = await ServiceDao.find_one_or_none_by_id(
         session=session_without_commit,
         data_id=service_id
@@ -84,6 +79,14 @@ async def vin_decoder(
     message: Message,
     session_without_commit: AsyncSession
 ):
+    telegram_ids = await PaymentDao.get_users_telegram_ids(
+            session=session_without_commit,
+            service_id=1
+            )
+    if message.from_user.id not in telegram_ids:
+        return await message.answer(
+            text='Сервис не оплачен'
+            )
     local_vin = message.text
     convert_result = await vin_converter(local_vin, session_without_commit)
     if isinstance(convert_result, str):
