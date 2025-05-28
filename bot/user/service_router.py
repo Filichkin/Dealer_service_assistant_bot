@@ -74,7 +74,7 @@ async def convert_handler(message: Message):
     await message.answer(text='Введите локальный VIN')
 
 
-@service_router.message()
+@service_router.message(F.text)
 async def vin_decoder(
     message: Message,
     session_without_commit: AsyncSession
