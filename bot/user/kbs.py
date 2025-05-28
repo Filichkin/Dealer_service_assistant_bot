@@ -79,6 +79,12 @@ def home_kb() -> InlineKeyboardMarkup:
 
 def cancel_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
+    kb.button(text='Отмена', callback_data='cancel_service')
+    return kb.as_markup()
+
+
+def cancel_convert_kb_inline() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
     kb.button(text='Convert', callback_data='convert_service')
     kb.button(text='Отмена', callback_data='cancel_service')
     return kb.as_markup()

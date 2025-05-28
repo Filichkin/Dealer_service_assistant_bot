@@ -1,6 +1,5 @@
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
     CallbackQuery,
@@ -9,7 +8,11 @@ from aiogram.types import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import ServiceDao
-from bot.user.kbs import cancel_kb_inline, user_kb_back
+from bot.user.kbs import (
+    cancel_kb_inline,
+    cancel_convert_kb_inline,
+    user_kb_back
+)
 from bot.utils.vin_converter import vin_converter
 
 
@@ -41,7 +44,7 @@ async def page_service(
         )
         await call.message.answer(
             service_text,
-            reply_markup=cancel_kb_inline()
+            reply_markup=cancel_convert_kb_inline()
         )
 
     elif 'Наличие запасных частей' in str(service.name):
@@ -69,44 +72,28 @@ async def page_service(
 @service_router.message(
         Command(commands=['convert'])
     )
-async def menu_handler(
-    message: Message,
-
-    state: FSMContext
-):
+async def convert_handler(message: Message):
     await message.answer(text='Введите локальный VIN')
-    await state.set_state(state=AddMessage.data)
 
 
-@service_router.message(AddMessage.data)
+@service_router.message()
 async def vin_decoder(
     message: Message,
     session_without_commit: AsyncSession
 ):
-    dkd = await vin_converter(message.text, session_without_commit)
-    await message.answer(
-        text=dkd.dkd_vin,
-        reply_markup=cancel_kb_inline()
-        )
-'''
-async def vin_decoder(message: Message, session_without_commit: AsyncSession):
-    vin = message.text.upper()
-    if len(vin) < 17:
-        return await message.answer(
-            text='Данный VIN введен не корректно',
-            reply_markup=cancel_kb_inline()
+    local_vin = message.text
+    convert_result = await vin_converter(local_vin, session_without_commit)
+    if isinstance(convert_result, str):
+        await message.answer(
+            text=convert_result,
+            reply_markup=cancel_convert_kb_inline()
             )
-    elif vin.startswith(prefix):
-        return await message.answer(
-            text='Данный VIN не имеет DKD аналога',
-            reply_markup=cancel_kb_inline()
+    else:
+        await message.answer(
+            text=convert_result.dkd_vin,
+            reply_markup=cancel_convert_kb_inline()
             )
-    dkd = await vin_converter(vin, session_without_commit)
-    await message.answer(
-        text=dkd.dkd_vin,
-        reply_markup=cancel_kb_inline()
-        )
-'''
+
 
 @service_router.callback_query(F.data == 'cancel_service')
 async def user_process_cancel(call: CallbackQuery):
@@ -119,8 +106,5 @@ async def user_process_cancel(call: CallbackQuery):
 
 
 @service_router.callback_query(F.data == 'convert_service')
-async def convert_process(call: CallbackQuery):
-    await call.message.answer(
-        text='/convert',
-        reply_to_message_id=call.message.message_id
-    )
+async def user_process_convert(call: CallbackQuery):
+    await convert_handler(message=call.message)
