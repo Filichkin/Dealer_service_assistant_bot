@@ -88,7 +88,7 @@ async def vin_decoder(
         text=dkd.dkd_vin,
         reply_markup=cancel_kb_inline()
         )
-'''    
+'''
 async def vin_decoder(message: Message, session_without_commit: AsyncSession):
     vin = message.text.upper()
     if len(vin) < 17:
@@ -121,5 +121,6 @@ async def user_process_cancel(call: CallbackQuery):
 @service_router.callback_query(F.data == 'convert_service')
 async def convert_process(call: CallbackQuery):
     await call.message.answer(
-        text='/convert'
+        text='/convert',
+        reply_to_message_id=call.message.message_id
     )
