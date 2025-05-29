@@ -127,8 +127,8 @@ async def text_handler(
                 )
         else:
             parts_text = (
-                f'<b>{part_number.upper()}</b>\n\n'
-                f'<b>{search_result.descriprion}</b>\n'
+                f'<b>{part_number.upper()}</b>\n'
+                f'<b>{search_result.descriprion}</b>\n\n'
                 f'Mobis: {search_result.mobis_count} \n'
                 f'Ellias: {search_result.ellias_count}\n'
                 )
