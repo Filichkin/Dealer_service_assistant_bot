@@ -10,6 +10,7 @@ from bot.dao.dao import PaymentDao, ServiceDao
 from bot.user.kbs import (
     cancel_kb_inline,
     cancel_convert_kb_inline,
+    cancel_search_kb_inline,
     user_kb_back
 )
 from bot.utils.vin_converter import vin_converter
@@ -48,11 +49,11 @@ async def page_service(
     elif 'Наличие запасных частей' in str(service.name):
         await call.answer('Запущена проверка наличия запасных частей.')
         service_text = (
-            'Введите каталожный номер'
+            'Введите команду search'
         )
         await call.message.answer(
             service_text,
-            reply_markup=cancel_kb_inline()
+            reply_markup=cancel_search_kb_inline()
         )
     elif 'История ТО' in str(service.name):
         await call.answer('Запущена проверка истории ТО.')
@@ -72,6 +73,13 @@ async def page_service(
     )
 async def convert_handler(message: Message):
     await message.answer(text='Введите локальный VIN')
+
+
+@service_router.message(
+        Command(commands=['search'])
+    )
+async def search_handler(message: Message):
+    await message.answer(text='Введите каталожный номер')
 
 
 @service_router.message(F.text)
@@ -114,3 +122,8 @@ async def user_process_cancel(call: CallbackQuery):
 @service_router.callback_query(F.data == 'convert_service')
 async def user_process_convert(call: CallbackQuery):
     await convert_handler(message=call.message)
+
+
+@service_router.callback_query(F.data == 'search_service')
+async def user_process_search(call: CallbackQuery):
+    await search_handler(message=call.message)
