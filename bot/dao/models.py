@@ -81,3 +81,19 @@ class VehicleData(Base):
 
     def __repr__(self):
         return f'{self.__class__.__name__}(id={self.id})'
+
+
+class PartsData(Base):
+    part_number: Mapped[str] = mapped_column(
+        Text,
+        unique=True,
+        nullable=False
+        )
+    descriprion: Mapped[str]
+    ellias_count: Mapped[int]
+    mobis_count: Mapped[str]
+
+    extend_existing = True
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(id={self.id})'
