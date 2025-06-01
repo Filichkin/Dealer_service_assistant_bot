@@ -7,13 +7,15 @@ from aiogram.types import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.dao.dao import PaymentDao, ServiceDao
+from bot.dao.dao import ServiceDao
 from bot.user.kbs import (
     cancel_convert_kb_inline,
     cancel_maintenance_kb_inline,
     cancel_search_kb_inline,
     user_kb_back
 )
+from bot.user.constants import VIN_DECODER_SERVICE_ID
+from bot.user.permissions import get_permission
 from bot.user.states import (
     MaintenanceSteps,
     PartSteps,
@@ -34,11 +36,6 @@ async def page_service(
     session_without_commit: AsyncSession
 ):
     service_id = int(call.data.split('_')[-1])
-    telegram_ids = await PaymentDao.get_users_telegram_ids(
-        session=session_without_commit,
-        service_id=service_id
-        )
-    print(telegram_ids)
     service = await ServiceDao.find_one_or_none_by_id(
         session=session_without_commit,
         data_id=service_id
@@ -80,17 +77,8 @@ async def page_service(
     )
 async def convert_handler(
     message: Message,
-    state: FSMContext,
-    session_without_commit: AsyncSession
+    state: FSMContext
 ):
-    telegram_ids = await PaymentDao.get_users_telegram_ids(
-            session=session_without_commit,
-            service_id=1
-        )
-    if message.from_user.id not in telegram_ids:
-        return await message.answer(
-            text='Сервис не оплачен'
-        )
     await message.answer(text='Введите локальный VIN')
     await state.set_state(VinSteps.vin)
 
@@ -101,6 +89,14 @@ async def process_vin(
     state: FSMContext,
     session_without_commit: AsyncSession
 ):
+    telegram_ids = await get_permission(
+        VIN_DECODER_SERVICE_ID,
+        session_without_commit
+    )
+    if message.from_user.id not in telegram_ids:
+        return await message.answer(
+            text='Сервис не оплачен'
+        )
     await state.update_data(vin=message.text)
     vin = await state.get_data()
     local_vin = vin['vin']
