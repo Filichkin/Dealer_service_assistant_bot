@@ -1,5 +1,7 @@
 from aiogram import Router, F
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
     CallbackQuery,
     Message
@@ -15,6 +17,14 @@ from bot.user.kbs import (
 )
 from bot.utils.parts_data import parts_search
 from bot.utils.vin_converter import vin_converter
+
+
+class VinSteps(StatesGroup):
+    vin = State()
+
+
+class PartSteps(StatesGroup):
+    part_number = State()
 
 
 service_router = Router()
@@ -72,17 +82,71 @@ async def page_service(
 @service_router.message(
         Command(commands=['convert'])
     )
-async def convert_handler(message: Message):
+async def convert_handler(message: Message, state: FSMContext):
     await message.answer(text='Введите локальный VIN')
+    await state.set_state(VinSteps.vin)
+
+
+@service_router.message(VinSteps.vin)
+async def process_vin(
+    message: Message,
+    state: FSMContext,
+    session_without_commit: AsyncSession
+):
+    await state.update_data(vin=message.text)
+    vin = await state.get_data()
+    local_vin = vin['vin']
+    convert_result = await vin_converter(local_vin, session_without_commit)
+    if isinstance(convert_result, str):
+        await message.answer(
+            text=convert_result,
+            reply_markup=cancel_convert_kb_inline()
+            )
+    else:
+        await message.answer(
+            text=convert_result.dkd_vin,
+            reply_markup=cancel_convert_kb_inline()
+            )
+    await state.clear()
 
 
 @service_router.message(
         Command(commands=['search'])
     )
-async def search_handler(message: Message):
+async def search_handler(message: Message, state: FSMContext):
     await message.answer(text='Введите каталожный номер')
+    await state.set_state(PartSteps.part_number)
 
 
+@service_router.message(PartSteps.part_number)
+async def process_part_number(
+    message: Message,
+    state: FSMContext,
+    session_without_commit: AsyncSession
+):
+    await state.update_data(part_number=message.text)
+    part_number = await state.get_data()
+    part_number = part_number['part_number']
+    search_result = await parts_search(part_number, session_without_commit)
+    if isinstance(search_result, str):
+        await message.answer(
+            text=search_result,
+            reply_markup=cancel_search_kb_inline()
+            )
+    else:
+        parts_text = (
+            f'<b>{part_number.upper()}</b>\n'
+            f'<b>{search_result.descriprion}</b>\n\n'
+            f'Mobis: {search_result.mobis_count} \n'
+            f'Ellias: {search_result.ellias_count}\n'
+            )
+
+        await message.answer(
+            text=parts_text,
+            reply_markup=cancel_search_kb_inline()
+            )
+
+'''
 @service_router.message(F.text)
 async def text_handler(
     message: Message,
@@ -137,7 +201,7 @@ async def text_handler(
                 text=parts_text,
                 reply_markup=cancel_search_kb_inline()
                 )
-
+'''
 
 @service_router.callback_query(F.data == 'cancel_service')
 async def user_process_cancel(call: CallbackQuery):
@@ -150,10 +214,10 @@ async def user_process_cancel(call: CallbackQuery):
 
 
 @service_router.callback_query(F.data == 'convert_service')
-async def user_process_convert(call: CallbackQuery):
-    await convert_handler(message=call.message)
+async def user_process_convert(call: CallbackQuery, state: FSMContext):
+    await convert_handler(message=call.message, state=state)
 
 
 @service_router.callback_query(F.data == 'search_service')
-async def user_process_search(call: CallbackQuery):
-    await search_handler(message=call.message)
+async def user_process_search(call: CallbackQuery, state: FSMContext):
+    await search_handler(message=call.message, state=state)
