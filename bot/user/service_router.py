@@ -1,7 +1,6 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
     CallbackQuery,
     Message
@@ -15,20 +14,13 @@ from bot.user.kbs import (
     cancel_search_kb_inline,
     user_kb_back
 )
+from bot.user.states import (
+    MaintenanceSteps,
+    PartSteps,
+    VinSteps
+)
 from bot.utils.parts_data import parts_search
 from bot.utils.vin_converter import vin_converter
-
-
-class VinSteps(StatesGroup):
-    vin = State()
-
-
-class PartSteps(StatesGroup):
-    part_number = State()
-
-
-class MaintenanceSteps(StatesGroup):
-    vin = State()
 
 
 service_router = Router()
@@ -186,64 +178,6 @@ async def process_maintenance(
             reply_markup=cancel_maintenance_kb_inline()
             )
     await state.clear()
-
-
-'''
-@service_router.message(F.text)
-async def text_handler(
-    message: Message,
-    session_without_commit: AsyncSession
-):
-    if len(message.text) == 17:
-        telegram_ids = await PaymentDao.get_users_telegram_ids(
-            session=session_without_commit,
-            service_id=1
-        )
-        if message.from_user.id not in telegram_ids:
-            return await message.answer(
-                text='Сервис не оплачен'
-                )
-        local_vin = message.text
-        convert_result = await vin_converter(local_vin, session_without_commit)
-        if isinstance(convert_result, str):
-            await message.answer(
-                text=convert_result,
-                reply_markup=cancel_convert_kb_inline()
-                )
-        else:
-            await message.answer(
-                text=convert_result.dkd_vin,
-                reply_markup=cancel_convert_kb_inline()
-                )
-    if len(message.text) >= 10 and len(message.text) <= 15:
-        telegram_ids = await PaymentDao.get_users_telegram_ids(
-                session=session_without_commit,
-                service_id=3
-                )
-        if message.from_user.id not in telegram_ids:
-            return await message.answer(
-                text='Сервис не оплачен'
-                )
-        part_number = message.text
-        search_result = await parts_search(part_number, session_without_commit)
-        if isinstance(search_result, str):
-            await message.answer(
-                text=search_result,
-                reply_markup=cancel_search_kb_inline()
-                )
-        else:
-            parts_text = (
-                f'<b>{part_number.upper()}</b>\n'
-                f'<b>{search_result.descriprion}</b>\n\n'
-                f'Mobis: {search_result.mobis_count} \n'
-                f'Ellias: {search_result.ellias_count}\n'
-                )
-
-            await message.answer(
-                text=parts_text,
-                reply_markup=cancel_search_kb_inline()
-                )
-'''
 
 
 @service_router.callback_query(F.data == 'cancel_service')
