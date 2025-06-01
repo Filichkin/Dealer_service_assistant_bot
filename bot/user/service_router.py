@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import PaymentDao, ServiceDao
 from bot.user.kbs import (
-    cancel_kb_inline,
     cancel_convert_kb_inline,
+    cancel_maintenance_kb_inline,
     cancel_search_kb_inline,
     user_kb_back
 )
@@ -25,6 +25,10 @@ class VinSteps(StatesGroup):
 
 class PartSteps(StatesGroup):
     part_number = State()
+
+
+class MaintenanceSteps(StatesGroup):
+    vin = State()
 
 
 service_router = Router()
@@ -50,7 +54,7 @@ async def page_service(
     if 'VIN' in str(service.name):
         await call.answer('Запущен VIN decoder.')
         service_text = (
-            'Введите команду convert'
+            'Введите команду /convert'
         )
         await call.message.answer(
             service_text,
@@ -60,7 +64,7 @@ async def page_service(
     elif 'Наличие запасных частей' in str(service.name):
         await call.answer('Запущена проверка наличия запасных частей.')
         service_text = (
-            'Введите команду search'
+            'Введите команду /search'
         )
         await call.message.answer(
             service_text,
@@ -69,11 +73,11 @@ async def page_service(
     elif 'История ТО' in str(service.name):
         await call.answer('Запущена проверка истории ТО.')
         service_text = (
-            'Введите локальный VIN'
+            'Введите команду /maintenance'
         )
         await call.message.answer(
             service_text,
-            reply_markup=cancel_kb_inline()
+            reply_markup=cancel_maintenance_kb_inline()
         )
     else:
         await call.answer('О данном сервисе нет информации.')
@@ -82,7 +86,19 @@ async def page_service(
 @service_router.message(
         Command(commands=['convert'])
     )
-async def convert_handler(message: Message, state: FSMContext):
+async def convert_handler(
+    message: Message,
+    state: FSMContext,
+    session_without_commit: AsyncSession
+):
+    telegram_ids = await PaymentDao.get_users_telegram_ids(
+            session=session_without_commit,
+            service_id=1
+        )
+    if message.from_user.id not in telegram_ids:
+        return await message.answer(
+            text='Сервис не оплачен'
+        )
     await message.answer(text='Введите локальный VIN')
     await state.set_state(VinSteps.vin)
 
@@ -145,6 +161,32 @@ async def process_part_number(
             text=parts_text,
             reply_markup=cancel_search_kb_inline()
             )
+    await state.clear()
+
+
+@service_router.message(
+        Command(commands=['maintenance'])
+    )
+async def maintenance_handler(message: Message, state: FSMContext):
+    await message.answer(text='Введите VIN')
+    await state.set_state(MaintenanceSteps.vin)
+
+
+@service_router.message(MaintenanceSteps.vin)
+async def process_maintenance(
+    message: Message,
+    state: FSMContext,
+    session_without_commit: AsyncSession
+):
+    await state.update_data(vin=message.text)
+    vin = await state.get_data()
+    vin = vin['vin']
+    await message.answer(
+            text=f'Сервис в разработке: {vin}',
+            reply_markup=cancel_maintenance_kb_inline()
+            )
+    await state.clear()
+
 
 '''
 @service_router.message(F.text)
@@ -203,6 +245,7 @@ async def text_handler(
                 )
 '''
 
+
 @service_router.callback_query(F.data == 'cancel_service')
 async def user_process_cancel(call: CallbackQuery):
     await call.answer('Отмена сценария')
@@ -221,3 +264,8 @@ async def user_process_convert(call: CallbackQuery, state: FSMContext):
 @service_router.callback_query(F.data == 'search_service')
 async def user_process_search(call: CallbackQuery, state: FSMContext):
     await search_handler(message=call.message, state=state)
+
+
+@service_router.callback_query(F.data == 'maintenance_service')
+async def user_process_maintenance(call: CallbackQuery, state: FSMContext):
+    await maintenance_handler(message=call.message, state=state)

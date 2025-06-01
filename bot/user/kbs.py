@@ -97,6 +97,13 @@ def cancel_search_kb_inline() -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
+def cancel_maintenance_kb_inline() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text='Maintenance', callback_data='maintenance_service')
+    kb.button(text='Отмена', callback_data='cancel_service')
+    return kb.as_markup()
+
+
 def user_kb_back() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='🏠 На главную', callback_data='home')
