@@ -11,3 +11,7 @@ class PartSteps(StatesGroup):
 
 class MaintenanceSteps(StatesGroup):
     vin = State()
+
+
+class AssistantSteps(StatesGroup):
+    prompt = State()

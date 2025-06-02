@@ -18,6 +18,7 @@ from bot.user.kbs import (
 from bot.user.constants import VIN_DECODER_SERVICE_ID
 from bot.user.permissions import get_permission
 from bot.user.states import (
+    AssistantSteps,
     MaintenanceSteps,
     PartSteps,
     VinSteps
@@ -186,6 +187,30 @@ async def process_maintenance(
     await state.clear()
 
 
+@service_router.message(
+        Command(commands=['warranty'])
+    )
+async def assistant_handler(message: Message, state: FSMContext):
+    await message.answer(text='Введите ваш вопрос')
+    await state.set_state(AssistantSteps.prompt)
+
+
+@service_router.message(AssistantSteps.prompt)
+async def process_assistant(
+    message: Message,
+    state: FSMContext,
+    session_without_commit: AsyncSession
+):
+    await state.update_data(prompt=message.text)
+    prompt = await state.get_data()
+    prompt = prompt['prompt']
+    await message.answer(
+            text=f'Сервис в разработке: {prompt}',
+            reply_markup=cancel_warranty_kb_inline()
+            )
+    await state.clear()
+
+
 @service_router.callback_query(F.data == 'cancel_service')
 async def user_process_cancel(call: CallbackQuery):
     await call.answer('Отмена сценария')
@@ -209,3 +234,8 @@ async def user_process_search(call: CallbackQuery, state: FSMContext):
 @service_router.callback_query(F.data == 'maintenance_service')
 async def user_process_maintenance(call: CallbackQuery, state: FSMContext):
     await maintenance_handler(message=call.message, state=state)
+
+
+@service_router.callback_query(F.data == 'warranty_service')
+async def user_process_assistant(call: CallbackQuery, state: FSMContext):
+    await assistant_handler(message=call.message, state=state)
