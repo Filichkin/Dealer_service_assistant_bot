@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     PROVIDER_TOKEN: str
     MISTRAL_TOKEN: str
     MISTRAL_MODEL: str = 'mistral-small-latest'
+    MISTRAL_FILE_ID: str
     FORMAT_LOG: str = '{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}'
     LOG_ROTATION: str = '10 MB'
     DATABASE_PORT: int

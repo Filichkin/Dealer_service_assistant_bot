@@ -25,6 +25,7 @@ from bot.user.states import (
 )
 from bot.utils.parts_data import parts_search
 from bot.utils.vin_converter import vin_converter
+from bot.utils.assistant import assistant_service
 
 
 service_router = Router()
@@ -204,8 +205,9 @@ async def process_assistant(
     await state.update_data(prompt=message.text)
     prompt = await state.get_data()
     prompt = prompt['prompt']
+    result = assistant_service(prompt)
     await message.answer(
-            text=f'Сервис в разработке: {prompt}',
+            text=result,
             reply_markup=cancel_warranty_kb_inline()
             )
     await state.clear()
