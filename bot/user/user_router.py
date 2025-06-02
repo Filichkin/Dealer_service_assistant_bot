@@ -33,8 +33,8 @@ async def cmd_start(message: Message, session_with_commit: AsyncSession):
     )
     await UserDAO.add(session=session_with_commit, values=values)
     await message.answer(
-        '🎉 <b>Благодарим за регистрацию!</b>. '
-        'Теперь выберите необходимое действие.',
+        '<b>Благодарим за использование бота!</b>. '
+        'Выберите необходимое действие.',
         reply_markup=main_user_kb(user_id)
     )
 

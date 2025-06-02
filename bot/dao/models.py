@@ -7,8 +7,8 @@ from bot.dao.database import Base
 
 class User(Base):
     username: Mapped[str | None]
-    first_name: Mapped[str]
-    last_name: Mapped[str]
+    first_name: Mapped[str | None]
+    last_name: Mapped[str | None]
     telegram_id: Mapped[int] = mapped_column(
         BigInteger,
         unique=True,
