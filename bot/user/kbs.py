@@ -79,35 +79,35 @@ def home_kb() -> InlineKeyboardMarkup:
 
 def cancel_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text='Отмена', callback_data='cancel_service')
+    kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
 
 def cancel_convert_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='Convert', callback_data='convert_service')
-    kb.button(text='Отмена', callback_data='cancel_service')
+    kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
 
 def cancel_search_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='Search', callback_data='search_service')
-    kb.button(text='Отмена', callback_data='cancel_service')
+    kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
 
 def cancel_maintenance_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='Maintenance', callback_data='maintenance_service')
-    kb.button(text='Отмена', callback_data='cancel_service')
+    kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
 
 def cancel_warranty_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text='Warranty', callback_data='warranty_service')
-    kb.button(text='Отмена', callback_data='cancel_service')
+    kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
 

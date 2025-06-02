@@ -6,8 +6,13 @@ from bot.config import settings
 def assistant_service(prompt: str):
     client = Mistral(api_key=settings.MISTRAL_TOKEN)
     signed_url = client.files.get_signed_url(file_id=settings.MISTRAL_FILE_ID)
+    system = """
+                Ты — внутренний менеджер отдела гарантии Киа.
+                Отвечаешь по делу без лишних вступлений.
+                """
 
     messages = [
+        {'role': 'system', 'content': system},
         {
             'role': 'user',
             'content': [

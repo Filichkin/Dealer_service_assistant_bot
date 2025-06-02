@@ -90,7 +90,6 @@ async def process_about(
             ],
         reply_markup=get_service_buy_kb(price)
     )
-    await call.message.delete()
 
 
 @catalog_router.pre_checkout_query(lambda query: True)

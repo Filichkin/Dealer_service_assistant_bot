@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -199,15 +201,18 @@ async def assistant_handler(message: Message, state: FSMContext):
 @service_router.message(AssistantSteps.prompt)
 async def process_assistant(
     message: Message,
-    state: FSMContext,
-    session_without_commit: AsyncSession
+    state: FSMContext
 ):
     await state.update_data(prompt=message.text)
     prompt = await state.get_data()
     prompt = prompt['prompt']
+    await message.answer(text='Уже ищу информацию...')
+    await asyncio.sleep(3)
+    await message.answer(text='Готовлю ответ...')
     result = assistant_service(prompt)
     await message.answer(
             text=result,
+            parse_mode='Markdown',
             reply_markup=cancel_warranty_kb_inline()
             )
     await state.clear()
@@ -216,7 +221,6 @@ async def process_assistant(
 @service_router.callback_query(F.data == 'cancel_service')
 async def user_process_cancel(call: CallbackQuery):
     await call.answer('Отмена сценария')
-    await call.message.delete()
     await call.message.answer(
         text='Отмена операции.',
         reply_markup=user_kb_back()
