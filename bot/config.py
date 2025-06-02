@@ -6,6 +6,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.default import DefaultBotProperties
 from loguru import logger
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
     TELEGRAM_TOKEN: str
     ADMIN_IDS: List[int]
     PROVIDER_TOKEN: str
+    MISTRAL_TOKEN: SecretStr
     FORMAT_LOG: str = '{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}'
     LOG_ROTATION: str = '10 MB'
     DATABASE_PORT: int
