@@ -12,6 +12,7 @@ from bot.user.kbs import (
     cancel_convert_kb_inline,
     cancel_maintenance_kb_inline,
     cancel_search_kb_inline,
+    cancel_warranty_kb_inline,
     user_kb_back
 )
 from bot.user.constants import VIN_DECODER_SERVICE_ID
@@ -67,6 +68,15 @@ async def page_service(
         await call.message.answer(
             service_text,
             reply_markup=cancel_maintenance_kb_inline()
+        )
+    elif 'Гарантийный ассистент' in str(service.name):
+        await call.answer('Запущен ассистент.')
+        service_text = (
+            'Введите команду /warranty'
+        )
+        await call.message.answer(
+            service_text,
+            reply_markup=cancel_warranty_kb_inline()
         )
     else:
         await call.answer('О данном сервисе нет информации.')
