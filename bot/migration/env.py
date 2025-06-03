@@ -13,7 +13,14 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from bot.dao.database import Base, DATABASE_URL
-from bot.dao.models import PartsData, Payment, Service, User, VehicleData
+from bot.dao.models import (
+    PartsData,
+    Payment,
+    Service,
+    User,
+    VehicleData,
+    MaintenanceData
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

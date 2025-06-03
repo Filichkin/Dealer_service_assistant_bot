@@ -156,3 +156,4 @@ commands.txt
 log.txt
 *.json
 *.pdf
+*.csv

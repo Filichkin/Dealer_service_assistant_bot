@@ -97,3 +97,19 @@ class PartsData(Base):
 
     def __repr__(self):
         return f'{self.__class__.__name__}(id={self.id})'
+
+
+class MaintenanceData(Base):
+    vin: Mapped[str] = mapped_column(
+        Text,
+        nullable=False
+        )
+    type: Mapped[str]
+    dealer_code: Mapped[str]
+    maintenance_date: Mapped[str]
+    odometer: Mapped[int]
+
+    extend_existing = True
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(id={self.id})'
