@@ -1,5 +1,3 @@
-import asyncio
-
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -207,8 +205,6 @@ async def process_assistant(
     prompt = await state.get_data()
     prompt = prompt['prompt']
     await message.answer(text='Уже ищу информацию...')
-    await asyncio.sleep(3)
-    await message.answer(text='Готовлю ответ...')
     result = assistant_service(prompt)
     await message.answer(
             text=result,
