@@ -15,7 +15,12 @@ from bot.user.kbs import (
     cancel_warranty_kb_inline,
     user_kb_back
 )
-from bot.user.constants import VIN_DECODER_SERVICE_ID
+from bot.user.constants import (
+    ASSISTANT_SERVICE_ID,
+    MAINTENANCE_SERVICE_ID,
+    PARTS_SEARCH_SERVICE_ID,
+    VIN_DECODER_SERVICE_ID
+)
 from bot.user.permissions import get_permission
 from bot.user.states import (
     AssistantSteps,
@@ -74,7 +79,7 @@ async def page_service(
     elif 'Гарантийный ассистент' in str(service.name):
         await call.answer('Запущен ассистент.')
         service_text = (
-            'Введите команду /warranty'
+            'Введите команду /assistant'
         )
         await call.message.answer(
             service_text,
@@ -101,14 +106,14 @@ async def process_vin(
     state: FSMContext,
     session_without_commit: AsyncSession
 ):
-    telegram_ids = await get_permission(
+    if not await get_permission(
         VIN_DECODER_SERVICE_ID,
+        message.from_user.id,
         session_without_commit
-    )
-    if message.from_user.id not in telegram_ids:
+    ):
         return await message.answer(
-            text='Сервис не оплачен'
-        )
+            text='Сервис не оплачен или закончилась подписка'
+            )
     await state.update_data(vin=message.text)
     vin = await state.get_data()
     local_vin = vin['vin']
@@ -140,6 +145,14 @@ async def process_part_number(
     state: FSMContext,
     session_without_commit: AsyncSession
 ):
+    if not await get_permission(
+        PARTS_SEARCH_SERVICE_ID,
+        message.from_user.id,
+        session_without_commit
+    ):
+        return await message.answer(
+            text='Сервис не оплачен или закончилась подписка'
+            )
     await state.update_data(part_number=message.text)
     part_number = await state.get_data()
     part_number = part_number['part_number']
@@ -178,6 +191,14 @@ async def process_maintenance(
     state: FSMContext,
     session_without_commit: AsyncSession
 ):
+    if not await get_permission(
+        MAINTENANCE_SERVICE_ID,
+        message.from_user.id,
+        session_without_commit
+    ):
+        return await message.answer(
+            text='Сервис не оплачен или закончилась подписка'
+            )
     await state.update_data(vin=message.text)
     vin = await state.get_data()
     vin = vin['vin']
@@ -189,7 +210,7 @@ async def process_maintenance(
 
 
 @service_router.message(
-        Command(commands=['warranty'])
+        Command(commands=['assistant'])
     )
 async def assistant_handler(message: Message, state: FSMContext):
     await message.answer(text='Введите ваш вопрос')
@@ -199,12 +220,25 @@ async def assistant_handler(message: Message, state: FSMContext):
 @service_router.message(AssistantSteps.prompt)
 async def process_assistant(
     message: Message,
-    state: FSMContext
+    state: FSMContext,
+    session_without_commit: AsyncSession
 ):
+    if not await get_permission(
+        ASSISTANT_SERVICE_ID,
+        message.from_user.id,
+        session_without_commit
+    ):
+        return await message.answer(
+            text='Сервис не оплачен или закончилась подписка'
+            )
     await state.update_data(prompt=message.text)
     prompt = await state.get_data()
     prompt = prompt['prompt']
-    await message.answer(text='Уже ищу информацию...')
+    await message.answer(text=(
+        'Уже ищу информацию...'
+        'Время поиска может составлять более 30 секунд...'
+        )
+    )
     result = assistant_service(prompt)
     await message.answer(
             text=result,

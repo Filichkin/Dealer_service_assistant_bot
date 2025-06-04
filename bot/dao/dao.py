@@ -152,7 +152,7 @@ class PaymentDao(BaseDAO[Payment]):
         return total_price if total_price is not None else 0
 
     @classmethod
-    async def get_users_telegram_ids(
+    async def get_actual_users_telegram_ids(
         cls,
         session: AsyncSession,
         service_id: int
@@ -160,7 +160,8 @@ class PaymentDao(BaseDAO[Payment]):
         result = await session.execute(
             select(Payment).options(
                 selectinload(Payment.user)
-                ).filter(Payment.service_id == service_id)
+                ).filter(Payment.service_id == service_id
+                         ).filter(Payment.expire > datetime.now())
         )
         payments = result.scalars().all()
         telegram_ids = [payment.user.telegram_id for payment in payments]
