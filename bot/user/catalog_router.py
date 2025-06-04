@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from aiogram import Router, F
 from aiogram.enums import ContentType
 from aiogram.types import (
@@ -104,12 +106,17 @@ async def successful_payment(
 ):
     payment_info = message.successful_payment
     user_id, service_id = payment_info.invoice_payload.split('_')
+    expire = datetime.now() + timedelta(
+            minutes=settings.PAYMENT_EXPIRE_MINUTES
+            )
     payment_data = {
         'user_id': int(user_id),
         'payment_id': payment_info.telegram_payment_charge_id,
         'price': payment_info.total_amount / 100,
-        'service_id': int(service_id)
+        'service_id': int(service_id),
+        'expire': expire
     }
+    print(payment_data)
     # Добавляем информацию о покупке в базу данных
     await PaymentDao.add(
         session=session_with_commit,

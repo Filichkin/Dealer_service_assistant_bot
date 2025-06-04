@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -26,3 +28,4 @@ class PaymentData(BaseModel):
         )
     price: int = Field(..., description='Сумма платежа в рублях')
     service_id: int = Field(..., description='ID товара')
+    expire: datetime

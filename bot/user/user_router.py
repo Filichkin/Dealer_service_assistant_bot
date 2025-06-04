@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
@@ -139,7 +141,8 @@ async def page_user_payments(
             f'🔹 <b>Название:</b> <i>{service.name}</i>\n'
             f'🔹 <b>Описание:</b>\n<i>{service.description}</i>\n'
             f'🔹 <b>Цена:</b> <b>{service.price} ₽</b>\n'
-            f'🔹 <b>Закрытое описание:</b>\n<i>{service.hidden_content}</i>\n'
+            f'🔹 <b>Срок действия до:</b>\n<i>'
+            f'{payment.expire.strftime("%Y-%m-%d-%H:%M:%S")}</i>\n'
             f"━━━━━━━━━━━━━━━━━━\n"
         )
         await call.message.answer(text=service_text)
