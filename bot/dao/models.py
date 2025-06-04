@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import List
 
+from sqlalchemy import BigInteger, ForeignKey, func, Text, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import BigInteger, Text, ForeignKey
 from bot.dao.database import Base
 
 
@@ -49,6 +50,10 @@ class Payment(Base):
     service_id: Mapped[int] = mapped_column(ForeignKey('services.id'))
     price: Mapped[int]
     payment_id: Mapped[str] = mapped_column(unique=True)
+    expire: Mapped[datetime] = mapped_column(
+        TIMESTAMP,
+        server_default=func.now()
+        )
     user: Mapped['User'] = relationship(
         'User',
         back_populates='payments'

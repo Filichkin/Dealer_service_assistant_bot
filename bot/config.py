@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     TELEGRAM_TOKEN: str
     ADMIN_IDS: List[int]
     PROVIDER_TOKEN: str
+    PAYMENT_EXPIRE_MINUTES: int = 60 * 24 * 30
     MISTRAL_TOKEN: str
     MISTRAL_MODEL: str = 'mistral-small-latest'
     MISTRAL_FILE_ID: str
