@@ -1,5 +1,3 @@
-import datetime
-
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
@@ -125,9 +123,8 @@ async def page_user_payments(
         return
     statistic_text = (
             f'🚗  <b>Ваш профиль:</b>\n\n'
-            f'Количество покупок: <b>{total_payments}</b>\n'
+            f'Количество подписок: <b>{total_payments}</b>\n'
             f'Общая сумма: <b>{total_amount}₽</b>\n\n'
-            'Хотите просмотреть детали ваших оплат?'
         )
     await call.message.answer(text=statistic_text)
 

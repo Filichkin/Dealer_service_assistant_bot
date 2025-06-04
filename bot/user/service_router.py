@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
@@ -235,16 +236,23 @@ async def process_assistant(
     prompt = await state.get_data()
     prompt = prompt['prompt']
     await message.answer(text=(
-        'Уже ищу информацию...'
+        'Уже ищу информацию...\n'
         'Время поиска может составлять более 30 секунд...'
         )
     )
     result = assistant_service(prompt)
-    await message.answer(
-            text=result,
-            parse_mode='Markdown',
-            reply_markup=cancel_warranty_kb_inline()
-            )
+    try:
+        await message.answer(
+                text=result,
+                parse_mode='Markdown',
+                reply_markup=cancel_warranty_kb_inline()
+                )
+    except TelegramBadRequest:
+        await message.answer(
+                text=result,
+                parse_mode='HTML',
+                reply_markup=cancel_warranty_kb_inline()
+                )
     await state.clear()
 
 

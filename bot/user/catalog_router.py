@@ -74,6 +74,16 @@ async def process_about(
         filters=TelegramIDModel(telegram_id=call.from_user.id)
     )
     _, service_id, price = call.data.split('_')
+    telegram_ids = await PaymentDao.get_actual_users_telegram_ids(
+            session=session_without_commit,
+            service_id=int(service_id)
+            )
+    if user_info.telegram_id in telegram_ids:
+        return await bot.send_message(
+            chat_id=call.from_user.id,
+            text='❗️ У вас уже есть актуальная подписка на данный сервис'
+            )
+
     await bot.send_invoice(
         chat_id=call.from_user.id,
         title=f'Оплата 👉 {price}₽',
