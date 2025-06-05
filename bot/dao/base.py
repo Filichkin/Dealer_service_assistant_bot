@@ -321,7 +321,7 @@ class BaseDAO(Generic[T]):
             for record in records:
                 record_dict = record.model_dump(exclude_unset=True)
                 if not (part_number := record_dict.get('part_number')):
-                    logger.info(f'Пропуск записи: отсутствует part_number')
+                    logger.info('Пропуск записи: отсутствует part_number')
                     continue
 
                 update_data = {
@@ -330,7 +330,8 @@ class BaseDAO(Generic[T]):
                 if not update_data:
                     logger.warning(
                         f'Пропуск записи: '
-                        f'нет данных для обновления банка {part_number}'
+                        f'нет данных для обновления '
+                        f'запасной части: {part_number}'
                     )
                     continue
                 stmt = (
