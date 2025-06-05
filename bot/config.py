@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     OUTLOOK_PASSWORD: str
     OUTLOOK_USERNAME: str
     IMAP_SERVER: str
+    PARTS_EMAIL: str
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(
