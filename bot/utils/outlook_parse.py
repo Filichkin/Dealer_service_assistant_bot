@@ -1,4 +1,3 @@
-import asyncio
 from datetime import date, datetime
 
 from imap_tools import A, MailBox
@@ -7,9 +6,9 @@ from loguru import logger
 from bot.config import settings
 
 
-async def parse_price_data():
+def parse_price_data():
     try:
-        async with MailBox(settings.IMAP_SERVER).login(
+        with MailBox(settings.IMAP_SERVER).login(
             settings.OUTLOOK_USERNAME,
             settings.OUTLOOK_PASSWORD
         ) as mailbox:
@@ -26,9 +25,13 @@ async def parse_price_data():
                         with open(
                             'data/prices/{}'.format(att.filename), 'wb'
                         ) as file:
-                            await file.write(att.payload)
-    except asyncio.TimeoutError as error:
+                            file.write(att.payload)
+    except Exception as error:
         logger.error(
             f'Ошибка при запросе: {error}'
             )
         return None
+
+
+if __name__ == '__main__':
+    parse_price_data()
