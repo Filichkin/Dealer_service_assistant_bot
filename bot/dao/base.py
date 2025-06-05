@@ -310,7 +310,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def bulk_update(
+    async def bulk_update_parts_data(
         cls, session: AsyncSession, records: List[BaseModel]
     ) -> int:
         """Массовое обновление записей"""
@@ -320,15 +320,22 @@ class BaseDAO(Generic[T]):
             updated_count = 0
             for record in records:
                 record_dict = record.model_dump(exclude_unset=True)
-                if 'id' not in record_dict:
+                if not (part_number := record_dict.get('part_number')):
+                    logger.info(f'Пропуск записи: отсутствует part_number')
                     continue
 
                 update_data = {
-                    k: v for k, v in record_dict.items() if k != 'id'
+                    k: v for k, v in record_dict.items() if k != 'part_number'
                     }
+                if not update_data:
+                    logger.warning(
+                        f'Пропуск записи: '
+                        f'нет данных для обновления банка {part_number}'
+                    )
+                    continue
                 stmt = (
                     sqlalchemy_update(cls.model)
-                    .filter_by(id=record_dict['id'])
+                    .where(cls.model.part_number == part_number)
                     .values(**update_data)
                 )
                 result = await session.execute(stmt)
