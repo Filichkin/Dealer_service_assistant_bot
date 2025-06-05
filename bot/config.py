@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_DB: str
     POSTGRES_HOST: str
+    OUTLOOK_PASSWORD: str
+    OUTLOOK_USERNAME: str
+    IMAP_SERVER: str
+
     model_config = SettingsConfigDict(
         env_file=os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
