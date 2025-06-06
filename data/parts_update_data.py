@@ -1,4 +1,3 @@
-import asyncio
 import json
 
 from loguru import logger
@@ -34,7 +33,3 @@ async def update_parts_data(session_with_commit: AsyncSession):
             f'Ошибка при загрузке данных: {error}'
             )
         return None
-
-
-if __name__ == '__main__':
-    asyncio.run(update_parts_data())

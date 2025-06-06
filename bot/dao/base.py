@@ -323,7 +323,6 @@ class BaseDAO(Generic[T]):
                 if not (part_number := record.get('part_number')):
                     logger.info('Пропуск записи: отсутствует part_number')
                     continue
-
                 update_data = {
                     k: v for k, v in record.items() if k != 'part_number'
                     }
@@ -334,12 +333,12 @@ class BaseDAO(Generic[T]):
                         f'запасной части: {part_number}'
                     )
                     continue
-                stmt = (
+                query = (
                     sqlalchemy_update(cls.model)
                     .where(cls.model.part_number == part_number)
                     .values(**update_data)
                 )
-                result = await session.execute(stmt)
+                result = await session.execute(query)
                 updated_count += result.rowcount
 
             await session.flush()
