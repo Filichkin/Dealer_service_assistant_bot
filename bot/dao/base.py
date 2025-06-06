@@ -319,13 +319,13 @@ class BaseDAO(Generic[T]):
         try:
             updated_count = 0
             for record in records:
-                record_dict = record.model_dump(exclude_unset=True)
-                if not (part_number := record_dict.get('part_number')):
+                # record_dict = record.model_dump(exclude_unset=True)
+                if not (part_number := record.get('part_number')):
                     logger.info('Пропуск записи: отсутствует part_number')
                     continue
 
                 update_data = {
-                    k: v for k, v in record_dict.items() if k != 'part_number'
+                    k: v for k, v in record.items() if k != 'part_number'
                     }
                 if not update_data:
                     logger.warning(
