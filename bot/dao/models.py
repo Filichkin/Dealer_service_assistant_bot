@@ -91,9 +91,13 @@ class PartsData(Base):
         unique=True,
         nullable=False
         )
-    descriprion: Mapped[str]
+    model: Mapped[str]
+    descriprion_en: Mapped[str]
+    descriprion_ru: Mapped[str]
+    dnp: Mapped[float]
+    list_price: Mapped[float]
+    mobis_count: Mapped[int]
     ellias_count: Mapped[int]
-    mobis_count: Mapped[str]
 
     extend_existing = True
 
