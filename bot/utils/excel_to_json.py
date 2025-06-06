@@ -56,6 +56,7 @@ def excel_to_json():
             )
         with open('data/merged_parts.json', 'w') as outfile:
             json.dump(parts_dict, outfile, ensure_ascii=False)
+        logger.info('Успешное создание json файла')
     except Exception as error:
         logger.error(
             f'Ошибка при предобработке данных: {error}'
