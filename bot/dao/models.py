@@ -91,9 +91,18 @@ class PartsData(Base):
         unique=True,
         nullable=False
         )
-    model: Mapped[str]
-    descriprion_en: Mapped[str]
-    descriprion_ru: Mapped[str]
+    model: Mapped[str] = mapped_column(
+        Text,
+        nullable=True
+        )
+    descriprion_en: Mapped[str] = mapped_column(
+        Text,
+        nullable=True
+        )
+    descriprion_ru: Mapped[str] = mapped_column(
+        Text,
+        nullable=True
+        )
     dnp: Mapped[float]
     list_price: Mapped[float]
     mobis_count: Mapped[int]
