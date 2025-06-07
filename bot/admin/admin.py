@@ -1,7 +1,6 @@
 import asyncio
 
 from aiogram import Router, F
-from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
@@ -19,7 +18,6 @@ from bot.admin.schemas import ServiceModel, ServiceIDModel
 from bot.admin.utils import process_dell_text_msg
 from bot.config import settings, bot
 from bot.dao.dao import PaymentDao, ServiceDao, UserDAO
-from bot.utils.parts_update_data import update_parts_data
 
 
 admin_router = Router()
@@ -31,13 +29,6 @@ class AddService(StatesGroup):
     price = State()
     hidden_content = State()
     confirm_add = State()
-
-
-@admin_router.message(
-        Command(commands=['update'])
-    )
-async def cmd_update(message: Message, session_with_commit: AsyncSession):
-    await update_parts_data(session_with_commit)
 
 
 @admin_router.callback_query(
@@ -131,7 +122,7 @@ async def admin_process_start_dell(
         F.data.startswith('dell_'),
         F.from_user.id.in_(settings.ADMIN_IDS)
     )
-async def admin_process_start_dell(
+async def admin_process_start_dell_service(
     call: CallbackQuery,
     session_with_commit: AsyncSession
 ):
