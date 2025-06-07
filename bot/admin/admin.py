@@ -19,7 +19,7 @@ from bot.admin.schemas import ServiceModel, ServiceIDModel
 from bot.admin.utils import process_dell_text_msg
 from bot.config import settings, bot
 from bot.dao.dao import PaymentDao, ServiceDao, UserDAO
-from data.parts_update_data import update_parts_data
+from bot.utils.parts_update_data import update_parts_data
 
 
 admin_router = Router()

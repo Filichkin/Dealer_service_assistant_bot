@@ -13,9 +13,10 @@ from bot.admin.admin import admin_router
 from bot.user.catalog_router import catalog_router
 from bot.user.service_router import service_router
 from bot.user.user_router import user_router
-from bot.utils.outlook_parse import parse_price_data
+from bot.utils.constants import SCHEDULER_HOUR, SCHEDULER_MINUTE
 from bot.utils.excel_to_json import excel_to_json
-from data.parts_update_data import update_parts_data
+from bot.utils.outlook_parse import parse_price_data
+from bot.utils.parts_update_data import update_parts_data
 
 
 scheduler = AsyncIOScheduler()
@@ -23,19 +24,28 @@ scheduler = AsyncIOScheduler()
 
 scheduler.add_job(
     parse_price_data,
-    "cron", day_of_week="mon-sun", hour=14, minute=55,
+    'cron',
+    day_of_week='mon-sun',
+    hour=SCHEDULER_HOUR,
+    minute=SCHEDULER_MINUTE,
     id='parse_price_data',
     replace_existing=True
     )
 scheduler.add_job(
     excel_to_json,
-    "cron", day_of_week="mon-sun", hour=14, minute=56,
+    'cron',
+    day_of_week='mon-sun',
+    hour=SCHEDULER_HOUR,
+    minute=SCHEDULER_MINUTE+1,
     id='excel_to_json',
     replace_existing=True
     )
 scheduler.add_job(
     update_parts_data,
-    "cron", day_of_week="mon-sun", hour=14, minute=57,
+    'cron',
+    day_of_week='mon-sun',
+    hour=SCHEDULER_HOUR,
+    minute=SCHEDULER_MINUTE+2,
     id='update_parts_data',
     replace_existing=True
     )
