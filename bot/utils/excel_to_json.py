@@ -9,7 +9,7 @@ ELLIAS_PRICE_LIST = 'data/prices/Price Stock Elias Rus.xlsx'
 
 
 def excel_to_json():
-    logger.info('Начало предобработки данных их эксель файлов')
+    logger.info('Начало предобработки данных из эксель файлов')
     try:
         mobis = pd.read_excel(DEALER_PRICE_LIST)
         ellias = pd.read_excel(ELLIAS_PRICE_LIST)

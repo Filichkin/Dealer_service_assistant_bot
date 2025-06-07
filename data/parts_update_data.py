@@ -1,12 +1,14 @@
 import json
 
 from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import PartsDao
+from bot.dao.session_maker import session_manager
 
 
-async def update_parts_data(session_with_commit: AsyncSession):
+@session_manager.connection(commit=True)
+async def update_parts_data(session):
+    logger.info('Начало обновления данных в БД.')
     try:
         with open('data/merged_parts.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -24,7 +26,7 @@ async def update_parts_data(session_with_commit: AsyncSession):
                     }
                 values.append(part)
         return await PartsDao.bulk_update_parts_data(
-            session=session_with_commit,
+            session=session,
             records=values
             )
 

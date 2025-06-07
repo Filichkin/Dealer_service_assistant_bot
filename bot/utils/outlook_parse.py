@@ -7,6 +7,7 @@ from bot.config import settings
 
 
 def parse_price_data():
+    logger.info('Запущена проверка почты:')
     try:
         with MailBox(settings.IMAP_SERVER).login(
             settings.OUTLOOK_USERNAME,
@@ -26,6 +27,7 @@ def parse_price_data():
                             'data/prices/{}'.format(att.filename), 'wb'
                         ) as file:
                             file.write(att.payload)
+        logger.info('Успешная проверка почты:')
     except Exception as error:
         logger.error(
             f'Ошибка при запросе: {error}'
