@@ -62,7 +62,7 @@ async def page_service(
     elif 'Наличие запасных частей' in str(service.name):
         await call.answer('Запущена проверка наличия запасных частей.')
         service_text = (
-            'Введите команду /search'
+            'Введите команду /parts'
         )
         await call.message.answer(
             service_text,
@@ -133,9 +133,9 @@ async def process_vin(
 
 
 @service_router.message(
-        Command(commands=['search'])
+        Command(commands=['parts'])
     )
-async def search_handler(message: Message, state: FSMContext):
+async def parts_handler(message: Message, state: FSMContext):
     await message.answer(text='Введите каталожный номер')
     await state.set_state(PartSteps.part_number)
 
@@ -166,7 +166,7 @@ async def process_part_number(
     else:
         parts_text = (
             f'<b>{part_number.upper()}</b>\n'
-            f'<b>{search_result.descriprion}</b>\n\n'
+            f'<b>{search_result.descriprion_en}</b>\n\n'
             f'Mobis: {search_result.mobis_count} \n'
             f'Ellias: {search_result.ellias_count}\n'
             )
@@ -270,9 +270,9 @@ async def user_process_convert(call: CallbackQuery, state: FSMContext):
     await convert_handler(message=call.message, state=state)
 
 
-@service_router.callback_query(F.data == 'search_service')
-async def user_process_search(call: CallbackQuery, state: FSMContext):
-    await search_handler(message=call.message, state=state)
+@service_router.callback_query(F.data == 'parts_service')
+async def user_process_parts(call: CallbackQuery, state: FSMContext):
+    await parts_handler(message=call.message, state=state)
 
 
 @service_router.callback_query(F.data == 'maintenance_service')
@@ -280,6 +280,6 @@ async def user_process_maintenance(call: CallbackQuery, state: FSMContext):
     await maintenance_handler(message=call.message, state=state)
 
 
-@service_router.callback_query(F.data == 'warranty_service')
+@service_router.callback_query(F.data == 'assistant_service')
 async def user_process_assistant(call: CallbackQuery, state: FSMContext):
     await assistant_handler(message=call.message, state=state)

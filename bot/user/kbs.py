@@ -92,7 +92,7 @@ def cancel_convert_kb_inline() -> InlineKeyboardMarkup:
 
 def cancel_search_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text='Search', callback_data='search_service')
+    kb.button(text='Parts', callback_data='parts_service')
     kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
@@ -106,7 +106,7 @@ def cancel_maintenance_kb_inline() -> InlineKeyboardMarkup:
 
 def cancel_warranty_kb_inline() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text='Warranty', callback_data='warranty_service')
+    kb.button(text='Assistant', callback_data='assistant_service')
     kb.button(text='Выйти', callback_data='cancel_service')
     return kb.as_markup()
 
