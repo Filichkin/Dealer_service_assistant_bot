@@ -49,8 +49,8 @@ async def page_service(
         session=session_without_commit,
         data_id=service_id
     )
-    if 'VIN' in str(service.name):
-        await call.answer('Запущен VIN decoder.')
+    if 'VIN конвертер' in str(service.name):
+        await call.answer('Запущен VIN конвертер.')
         service_text = (
             'Введите команду /convert'
         )
@@ -59,8 +59,10 @@ async def page_service(
             reply_markup=cancel_convert_kb_inline()
         )
 
-    elif 'Наличие запасных частей' in str(service.name):
-        await call.answer('Запущена проверка наличия запасных частей.')
+    elif 'Проверка наличия запасных частей' in str(service.name):
+        await call.answer(
+            'Запущен сервис для проверки наличия запасных частей.'
+            )
         service_text = (
             'Введите команду /parts'
         )
@@ -68,8 +70,8 @@ async def page_service(
             service_text,
             reply_markup=cancel_search_kb_inline()
         )
-    elif 'История ТО' in str(service.name):
-        await call.answer('Запущена проверка истории ТО.')
+    elif 'Проверка истории ТО' in str(service.name):
+        await call.answer('Запущен сервис для проверки истории ТО.')
         service_text = (
             'Введите команду /maintenance'
         )
@@ -77,8 +79,8 @@ async def page_service(
             service_text,
             reply_markup=cancel_maintenance_kb_inline()
         )
-    elif 'Гарантийный ассистент' in str(service.name):
-        await call.answer('Запущен ассистент.')
+    elif 'Ассистент по гарантии' in str(service.name):
+        await call.answer('Запущен ассистент по гарантии.')
         service_text = (
             'Введите команду /assistant'
         )
