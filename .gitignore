@@ -154,7 +154,9 @@ prices/
 .DS_Store
 
 commands.txt
+server_commands.txt
 log.txt
 *.json
 *.pdf
 *.csv
+

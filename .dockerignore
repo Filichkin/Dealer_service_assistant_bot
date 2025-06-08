@@ -3,3 +3,5 @@ venv
 .vscode
 __pycache__/
 .env
+
+server_commands.txt
