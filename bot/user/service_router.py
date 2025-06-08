@@ -243,6 +243,7 @@ async def process_assistant(
         )
     )
     result = assistant_service(prompt)
+    await message.answer(text=('Вот что мне удалось найти:'))
     try:
         await message.answer(
                 text=result,

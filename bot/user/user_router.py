@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dao.dao import UserDAO
-from bot.user.kbs import main_user_kb, user_services_kb
+from bot.user.kbs import main_user_kb, payments_kb, user_services_kb
 from bot.user.schemas import TelegramIDModel, UserModel
 
 
@@ -57,8 +57,8 @@ async def page_about(call: CallbackQuery):
             '🚗 Получить оригинальный VIN\n\n'
             '🛞 Узнать наличие запасной части по артикулу\n\n'
             '⚙️ Проверить историю ТО\n\n'
-            '👨‍🔧 Ассистент по гарантии\n\n'
-            '📩 Вопрос разработчику\n\n'
+            '🤖 Задать вопрос ассистенту по гарантии\n\n'
+            '📩 Задать вопрос разработчику\n\n'
             '_Для оплаты подписки на сервис, '
             'перейдите в каталог._\n'
         ),
@@ -116,8 +116,8 @@ async def page_user_payments(
 
     if not payments:
         await call.message.edit_text(
-            text='🔍 <b>У вас пока нет оплат.</b>\n\n'
-                 'Откройте каталог и выберите нужный сервис!',
+            text='🔍 <b>У вас пока нет оплаченных подписок.</b>\n\n'
+                 'Откройте каталог и выберите необходимый сервис!',
             reply_markup=main_user_kb(call.from_user.id)
         )
         return
@@ -127,18 +127,36 @@ async def page_user_payments(
             f'Общая сумма: <b>{total_amount}₽</b>\n\n'
         )
     await call.message.answer(text=statistic_text)
+    await call.message.answer(
+        text='Для получения деталей по платежам или выхода, '
+        'выберите необходимое действие:',
+        reply_markup=payments_kb()
+    )
 
+
+@user_router.callback_query(F.data == 'payments_details')
+async def page_user_payments_details(
+    call: CallbackQuery,
+    session_without_commit: AsyncSession
+):
+    await call.answer('Детали оплат:')
+
+    # Получаем список покупок пользователя.
+    payments = await UserDAO.get_purchased_services(
+        session=session_without_commit,
+        telegram_id=call.from_user.id
+        )
     # Для каждой оплаты отправляем информацию.
     for payment in payments:
         service = payment.service
 
         service_text = (
-            f'🛒 <b>Информация о ваших подписках:</b>\n'
+            f'🛒 <b>Информация о ваших оплаченных подписках:</b>\n'
             f'━━━━━━━━━━━━━━━━━━\n'
-            f'🔹 <b>Название:</b> <i>{service.name}</i>\n'
-            f'🔹 <b>Описание:</b>\n<i>{service.description}</i>\n'
-            f'🔹 <b>Цена:</b> <b>{service.price} ₽</b>\n'
-            f'🔹 <b>Срок действия до:</b>\n<i>'
+            f'<b>Название:</b> <i>{service.name}</i>\n'
+            f'<b>Описание:</b>\n<i>{service.description}</i>\n'
+            f'<b>Цена:</b> <b>{service.price} ₽</b>\n'
+            f' <b>Срок действия до:</b>\n<i>'
             f'{payment.expire.strftime("%Y-%m-%d-%H:%M:%S")}</i>\n'
             f"━━━━━━━━━━━━━━━━━━\n"
         )
