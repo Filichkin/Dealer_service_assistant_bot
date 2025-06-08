@@ -52,7 +52,7 @@ async def page_service(
     if 'VIN конвертер' in str(service.name):
         await call.answer('Запущен VIN конвертер.')
         service_text = (
-            'Введите команду /convert'
+            'Введите команду 🔍 Convert'
         )
         await call.message.answer(
             service_text,
@@ -64,7 +64,7 @@ async def page_service(
             'Запущен сервис для проверки наличия запасных частей.'
             )
         service_text = (
-            'Введите команду /parts'
+            'Введите команду ⚙️ Parts'
         )
         await call.message.answer(
             service_text,
@@ -73,7 +73,7 @@ async def page_service(
     elif 'Проверка истории ТО' in str(service.name):
         await call.answer('Запущен сервис для проверки истории ТО.')
         service_text = (
-            'Введите команду /maintenance'
+            'Введите команду 🛠 Maintenance'
         )
         await call.message.answer(
             service_text,
@@ -82,7 +82,7 @@ async def page_service(
     elif 'Ассистент по гарантии' in str(service.name):
         await call.answer('Запущен ассистент по гарантии.')
         service_text = (
-            'Введите команду /assistant'
+            'Введите команду 🤖 Assistant'
         )
         await call.message.answer(
             service_text,
@@ -123,12 +123,18 @@ async def process_vin(
     convert_result = await vin_converter(local_vin, session_without_commit)
     if isinstance(convert_result, str):
         await message.answer(
-            text=convert_result,
+            text=convert_result
+            )
+        await message.answer(
+            text='Для новой проверки повторите команду 🔍 Convert',
             reply_markup=cancel_convert_kb_inline()
             )
     else:
         await message.answer(
-            text=convert_result.dkd_vin,
+            text=convert_result.dkd_vin
+            )
+        await message.answer(
+            text='Для новой проверки повторите команду 🔍 Convert',
             reply_markup=cancel_convert_kb_inline()
             )
     await state.clear()
@@ -162,7 +168,10 @@ async def process_part_number(
     search_result = await parts_search(part_number, session_without_commit)
     if isinstance(search_result, str):
         await message.answer(
-            text=search_result,
+            text=search_result
+            )
+        await message.answer(
+            text='Для новой проверки повторите команду ⚙️ Parts',
             reply_markup=cancel_search_kb_inline()
             )
     else:
@@ -174,7 +183,10 @@ async def process_part_number(
             )
 
         await message.answer(
-            text=parts_text,
+            text=parts_text
+            )
+        await message.answer(
+            text='Для новой проверки повторите команду ⚙️ Parts',
             reply_markup=cancel_search_kb_inline()
             )
     await state.clear()
@@ -206,7 +218,10 @@ async def process_maintenance(
     vin = await state.get_data()
     vin = vin['vin']
     await message.answer(
-            text=f'Сервис в разработке: {vin}',
+            text=f'Сервис в разработке: {vin}'
+            )
+    await message.answer(
+            text='Для новой проверки повторите команду 🛠 Maintenance',
             reply_markup=cancel_maintenance_kb_inline()
             )
     await state.clear()
@@ -247,15 +262,17 @@ async def process_assistant(
     try:
         await message.answer(
                 text=result,
-                parse_mode='Markdown',
-                reply_markup=cancel_warranty_kb_inline()
+                parse_mode='Markdown'
                 )
     except TelegramBadRequest:
         await message.answer(
                 text=result,
-                parse_mode='HTML',
-                reply_markup=cancel_warranty_kb_inline()
+                parse_mode='HTML'
                 )
+    await message.answer(
+            text='Для новой проверки повторите команду 🤖 Assistant',
+            reply_markup=cancel_warranty_kb_inline()
+            )
     await state.clear()
 
 
@@ -263,7 +280,7 @@ async def process_assistant(
 async def user_process_cancel(call: CallbackQuery):
     await call.answer('Отмена сценария')
     await call.message.answer(
-        text='Отмена операции.',
+        text='Выберите необходимое действие:',
         reply_markup=user_kb_back()
     )
 
