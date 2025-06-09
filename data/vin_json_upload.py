@@ -57,14 +57,22 @@ def json_upload(file_path):
                     }
                 values.append(vehicle)
                 vin_count += 1
-
+                if vin_count % 100000 == 0:
+                    with engine.connect() as conn:
+                        result = conn.execute(
+                            insert(vehicle_table),
+                            values
+                        )
+                        conn.commit()
+                    logger.info(f'Загруженно в БД {vin_count} позиций.')
+                    values = []
             with engine.connect() as conn:
                 result = conn.execute(
                     insert(vehicle_table),
                     values
                 )
                 conn.commit()
-        logger.info(f'Загруженно в БД {vin_count} позиций.')
+            logger.info(f'Загруженно в БД {vin_count} позиций.')
     except Exception as error:
         logger.error(
             f'Ошибка при загрузке данных: {error}'
