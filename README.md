@@ -9,6 +9,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
+
 ## Возможности бота
 
 #### VIN конвертер
@@ -43,7 +44,7 @@
 <img src="examples/payment.png" width="300" height: auto border="1">
 
 
-## Развёртывание
+## Развeртывание
 
 ля развертывания проекта используйте Docker. Убедитесь, что у вас установлены Docker и Docker Compose.
 
