@@ -11,7 +11,6 @@ def assistant_service(prompt: str):
         signed_url = client.files.get_signed_url(
             file_id=settings.MISTRAL_FILE_ID
             )
-        print(signed_url.url)
         system = """
                     Ты — внутренний менеджер отдела гарантии Киа.
                     Отвечаешь по делу без лишних вступлений.

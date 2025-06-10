@@ -109,6 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+image_link.txt
 
 # Spyder project settings
 .spyderproject
