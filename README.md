@@ -21,27 +21,27 @@
 
 ##### О сервисах бота:
 
-<img src="examples/decription.png" width="300" height: auto border="1">
+<img src="examples/decription.png" width="400" height: auto border="1">
 
 ##### Личный кабинет:
 
-<img src="examples/services.png" width="300" height: auto border="1">
+<img src="examples/services.png" width="400" height: auto border="1">
 
 ##### Каталог:
 
-<img src="examples/catalog.png" width="300" height: auto border="1">
+<img src="examples/catalog.png" width="400" height: auto border="1">
 
 ##### Админ зона:
 
-<img src="examples/statistic.png" width="300" height: auto border="1">
+<img src="examples/statistic.png" width="400" height: auto border="1">
 
 ##### Пример ассистента:
 
-<img src="examples/assistant.png" width="300" height: auto border="1">
+<img src="examples/assistant.png" width="400" height: auto border="1">
 
 ##### Оплата подписки на сервис:
 
-<img src="examples/payment.png" width="300" height: auto border="1">
+<img src="examples/payment.png" width="400" height: auto border="1">
 
 
 ## Развeртывание
