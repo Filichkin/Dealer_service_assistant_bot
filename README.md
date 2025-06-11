@@ -4,8 +4,9 @@
 
 ## Стек технологий
 
-![FastAPI](https://img.shields.io/badge/FastAPI-009639?style=flat)
 ![aiogram](https://img.shields.io/badge/aiogram-0099FF)
+![mistralai](https://img.shields.io/badge/mistralai-%23FFBB00)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-CC3300)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
