@@ -8,6 +8,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: my-pgadmin
+    env_file: .env
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    depends_on:
+      - db
+
   app:
     build:
       context: .
